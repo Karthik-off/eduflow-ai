@@ -572,14 +572,16 @@ const AdminDashboard = () => {
 
     try {
       // Create new student (mock implementation - replace with actual API call)
-      const newStudent = {
+      const newStudent: Student = {
         id: Date.now().toString(),
         roll_number: `STU${Date.now()}`,
         full_name: studentFormData.name,
         email: `${studentFormData.name.toLowerCase().replace(/\s+/g, '.')}@student.edu`,
         phone: studentFormData.phoneNumber,
+        department_id: null,
         cgpa: null,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
 
       // For now, add to local state (replace with actual API call)
@@ -641,7 +643,7 @@ const AdminDashboard = () => {
       }
 
       // Check required columns
-      const firstRow = jsonData[0];
+      const firstRow = jsonData[0] as Record<string, unknown>;
       const requiredColumns = ['name', 'age', 'dept', 'phone'];
       const missingColumns = requiredColumns.filter(col => !(col in firstRow));
 
@@ -651,15 +653,17 @@ const AdminDashboard = () => {
       }
 
       // Process Excel data
-      const newStudents: Student[] = jsonData.map((row: any, index) => {
+      const newStudents: Student[] = (jsonData as any[]).map((row: any, index) => {
         const student: Student = {
           id: Date.now().toString() + index,
           roll_number: `STU${Date.now()}${index}`,
           full_name: row.name || '',
           email: `${(row.name || '').toLowerCase().replace(/\s+/g, '.')}@student.edu`,
           phone: row.phone || null,
+          department_id: null,
           cgpa: null,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         };
 
         // Add department info if available
