@@ -367,8 +367,11 @@ const AdminClasses = () => {
                       variant="outline"
                       className={getStatusColor(cls.status)}
                     >
-                      <span>{cls.semester} - Section {cls.section}</span>
-                    </div>
+                      {cls.semester} - Section {cls.section}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
                     <div className="flex items-center gap-2 text-sm">
                       <UserCheck className="w-4 h-4 text-muted-foreground" />
                       <span>{cls.faculty}</span>

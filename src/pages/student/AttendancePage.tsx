@@ -273,5 +273,6 @@ const AttendancePage = () => {
       </div>
     </div>
   );
+};
 
 export default AttendancePage;
