@@ -175,9 +175,8 @@ const AdminAIAssistantPage = () => {
 
             </div>
           </div>
-        </div>
       </div>
-    </AdminLayout>
+    </div>
   );
 };
 
