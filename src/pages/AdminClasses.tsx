@@ -455,7 +455,6 @@ const AdminClasses = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
     </AdminLayout>
   );
 };

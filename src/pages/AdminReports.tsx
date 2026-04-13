@@ -389,7 +389,6 @@ const AdminReports = () => {
         </CardContent>
       </Card>
     </AdminLayout>
-    </AdminLayout>
   );
 };
 
