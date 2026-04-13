@@ -89,7 +89,7 @@ const ExamsPage = () => {
         }));
 
         setExams(exams);
-        setExamResults(results);
+        setExamResults(results as any);
       } catch (error) {
         console.error('Error fetching exam data:', error);
       } finally {
