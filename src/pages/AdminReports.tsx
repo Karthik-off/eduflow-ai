@@ -388,7 +388,7 @@ const AdminReports = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </AdminLayout>
     </AdminLayout>
   );
 };

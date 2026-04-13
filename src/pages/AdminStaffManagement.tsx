@@ -377,7 +377,7 @@ const AdminStaffManagement = () => {
           </div>
         </CardContent>
       </Card>
-      </div>
+    </div>
     </AdminLayout>
   );
 };
