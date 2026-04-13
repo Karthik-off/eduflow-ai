@@ -137,19 +137,6 @@ const AdminAIAssistantPage = () => {
           {/* Enhanced AI Assistant */}
           <div className="lg:col-span-2">
             <EnhancedAIAssistant 
-                    </div>
-                    <stat.icon className={`w-8 h-8 ${stat.color} opacity-20`} />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Main Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Enhanced AI Assistant */}
-            <div className="lg:col-span-2">
-              <EnhancedAIAssistant 
                 context={aiContext} 
                 className="h-[600px]"
               />
@@ -188,9 +175,8 @@ const AdminAIAssistantPage = () => {
 
             </div>
           </div>
-        </div>
       </div>
-    </AdminLayout>
+    </div>
   );
 };
 
