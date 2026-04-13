@@ -1,0 +1,1 @@
+ALTER TABLE public.students ADD COLUMN attendance_percentage numeric DEFAULT NULL;

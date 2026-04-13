@@ -1,0 +1,22 @@
+project_id = "afrbbuebzhlcrurrlsfg"
+
+[functions.create-staff]
+verify_jwt = false
+
+[functions.remove-student]
+verify_jwt = false
+
+[functions.remove-staff]
+verify_jwt = false
+
+[functions.staff-lookup]
+verify_jwt = false
+
+[functions.ai-academic]
+verify_jwt = false
+
+[functions.create-student]
+verify_jwt = false
+
+[functions.mark-attendance-qr]
+verify_jwt = false

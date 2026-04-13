@@ -1,0 +1,1 @@
+ALTER TABLE public.attendance_sessions ALTER COLUMN subject_id DROP NOT NULL;

@@ -1,0 +1,1 @@
+ALTER TABLE public.students ADD COLUMN bio text DEFAULT NULL;
