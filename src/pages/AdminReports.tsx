@@ -15,6 +15,7 @@ import {
   PieChart,
   Activity,
   AlertTriangle,
+  AlertCircle,
   CheckCircle,
   Clock,
   BookOpen,
