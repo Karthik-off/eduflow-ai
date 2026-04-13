@@ -402,7 +402,7 @@ const EduFlowDashboard = () => {
         </main>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from {
             opacity: 0;

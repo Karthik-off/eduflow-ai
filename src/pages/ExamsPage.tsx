@@ -87,6 +87,7 @@ const ExamsPage = () => {
           total_marks: m.max_marks,
           grade: m.marks_obtained >= m.max_marks * 0.9 ? 'A+' : m.marks_obtained >= m.max_marks * 0.8 ? 'A' : m.marks_obtained >= m.max_marks * 0.7 ? 'B' : 'C',
           percentage: Math.round((m.marks_obtained / m.max_marks) * 100),
+          created_at: m.created_at,
         }));
 
         setExams(exams);
