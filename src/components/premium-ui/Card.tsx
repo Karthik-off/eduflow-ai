@@ -1,6 +1,7 @@
 import React from 'react';
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { X } from 'lucide-react';
 
 const cardVariants = cva(
   "rounded-2xl border backdrop-blur-sm transition-all duration-200",
