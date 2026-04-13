@@ -41,14 +41,14 @@ interface StaffMember {
 interface Student {
   id: string;
   roll_number: string;
-  name: string;
+  full_name: string;
   email: string | null;
   phone: string | null;
-  department: string | null;
-  year: string | null;
+  department_id: string | null;
   cgpa: number | null;
   created_at: string;
-  updated_at: string | null;
+  updated_at: string;
+  [key: string]: any;
 }
 
 interface ExcelStudent {
@@ -162,7 +162,7 @@ const AdminDashboard = () => {
       console.log('AdminDashboard: Fetching students from Supabase...');
       const { data, error } = await supabase
         .from('students')
-        .select('id, roll_number, name, email, phone, department, year, cgpa, created_at, updated_at')
+        .select('id, roll_number, full_name, email, phone, department_id, cgpa, created_at, updated_at')
         .order('created_at', { ascending: false });
       
       if (error) {
@@ -792,11 +792,6 @@ const AdminDashboard = () => {
               >
                 <item.icon className="w-5 h-5" />
                 <span className="font-medium">{item.label}</span>
-                {item.badge && (
-                  <span className="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                    {item.badge}
-                  </span>
-                )}
               </Link>
             ))}
           </div>
