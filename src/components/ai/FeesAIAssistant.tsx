@@ -196,7 +196,7 @@ const FeesAIAssistant = ({
                           }}
                         >
                           <ArrowRight className="w-3 h-3 mr-2" />
-                          {actionText}
+                          {action.replace('•', '').trim()}
                         </Button>
                       ))}
                     </div>

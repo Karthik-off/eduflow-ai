@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/integrations/supabase/client';
@@ -50,12 +50,22 @@ const AlertsPage = () => {
     const fetchAlerts = async () => {
       try {
         const { data } = await supabase
-          .from('alerts')
+          .from('notifications')
           .select('*')
           .eq('student_id', studentProfile?.id || '')
           .order('created_at', { ascending: false });
 
-        setAlerts(data as Alert[] || []);
+        const mapped: Alert[] = (data || []).map((n: any) => ({
+          id: n.id,
+          title: n.title,
+          message: n.message,
+          type: n.type || 'info',
+          priority: 'medium',
+          is_read: n.is_read,
+          created_at: n.created_at,
+          student_id: n.student_id,
+        }));
+        setAlerts(mapped);
       } catch (error) {
         console.error('Error fetching alerts:', error);
       } finally {
@@ -197,7 +207,7 @@ const AlertsPage = () => {
   const markAsRead = async (alertId: string) => {
     try {
       await supabase
-        .from('alerts')
+        .from('notifications')
         .update({ is_read: true })
         .eq('id', alertId);
 
@@ -214,7 +224,7 @@ const AlertsPage = () => {
   const deleteAlert = async (alertId: string) => {
     try {
       await supabase
-        .from('alerts')
+        .from('notifications')
         .delete()
         .eq('id', alertId);
 
