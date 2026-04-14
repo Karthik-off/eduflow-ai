@@ -299,9 +299,6 @@ const AdminTimetable = () => {
               Timetable Management
             </h1>
             <p className="text-muted-foreground mt-1">Manage class schedules and time allocations</p>
-            Timetable Management
-          </h1>
-          <p className="text-muted-foreground mt-1">Manage class schedules and time allocations</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={exportTimetableData}>

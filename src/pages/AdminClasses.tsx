@@ -231,7 +231,8 @@ const AdminClasses = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <AdminLayout title="Classes Management">
+      <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -368,7 +369,7 @@ const AdminClasses = () => {
                       className={getStatusColor(cls.status)}
                     >
                       <span>{cls.semester} - Section {cls.section}</span>
-                    </div>
+                    </Badge>
                     <div className="flex items-center gap-2 text-sm">
                       <UserCheck className="w-4 h-4 text-muted-foreground" />
                       <span>{cls.faculty}</span>
@@ -382,6 +383,8 @@ const AdminClasses = () => {
                       <span className="text-xs">{cls.schedule}</span>
                     </div>
                   </div>
+                </CardHeader>
+                <CardContent>
 
                   <div className="border-t pt-3">
                     <div className="flex items-center justify-between mb-2">

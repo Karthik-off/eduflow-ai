@@ -5,16 +5,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { 
-  Settings, 
-  Save, 
-  RefreshCw, 
-  Shield, 
-  Bell, 
-  Database, 
-  Mail, 
-  Globe, 
-  Users, 
+import {
+  Settings,
+  Save,
+  RefreshCw,
+  Shield,
+  Bell,
+  Database,
+  Mail,
+  Globe,
+  Users,
   Clock,
   AlertTriangle,
   CheckCircle,
@@ -168,7 +168,7 @@ const AdminSettings = () => {
 
   const exportSettings = () => {
     const dataStr = JSON.stringify(settings, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
     const exportFileDefaultName = 'settings_backup.json';
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
@@ -593,7 +593,8 @@ const AdminSettings = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <AdminLayout title="System Settings">
+      <div className="container mx-auto p-6 space-y-6"> </div>
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -654,11 +655,10 @@ const AdminSettings = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors ${
-                    activeTab === tab.id
-                      ? 'bg-primary text-primary-foreground'
-                      : 'hover:bg-muted'
-                  }`}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors ${activeTab === tab.id
+                    ? 'bg-primary text-primary-foreground'
+                    : 'hover:bg-muted'
+                    }`}
                 >
                   {tab.icon}
                   <span>{tab.label}</span>

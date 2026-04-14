@@ -6,7 +6,7 @@ import LogoutConfirmDialog from '@/components/LogoutConfirmDialog';
 import BackToHomeButton from '@/components/BackToHomeButton';
 import SearchBar from '@/components/SearchBar';
 import { useDarkMode } from '@/contexts/DarkModeContext';
-import { Shield, LogOut, Home, Users, GraduationCap, BookOpen, Calendar, FileText, Settings, Sun, Moon } from 'lucide-react';
+import { Shield, LogOut, Home, Users, GraduationCap, BookOpen, Calendar, FileText, Settings, Sun, Moon, Bot } from 'lucide-react';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -49,6 +49,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
     { icon: BookOpen, label: 'Classes', active: location.pathname.includes('/admin/classes'), path: '/admin/classes' },
     { icon: Calendar, label: 'Timetable', active: location.pathname.includes('/admin/timetable'), path: '/admin/timetable' },
     { icon: FileText, label: 'Reports', active: location.pathname.includes('/admin/reports'), path: '/admin/reports' },
+    { icon: Bot, label: 'AI Assistant', active: location.pathname.includes('/admin/ai-assistant'), path: '/admin/ai-assistant' },
     { icon: Settings, label: 'Settings', active: location.pathname.includes('/admin/settings'), path: '/admin/settings' },
   ];
 

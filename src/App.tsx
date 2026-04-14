@@ -23,6 +23,7 @@ import StaffStudentManagement from "./pages/StaffStudentManagement";
 import StaffMarksEntry from "./pages/StaffMarksEntry";
 import StaffAcademicCalendar from "./pages/StaffAcademicCalendar";
 import StaffTimetableManagement from "./pages/StaffTimetableManagement";
+import StaffAIAssistantPage from "./pages/StaffAIAssistantPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminClassDetailPage from "./pages/AdminClassDetailPage";
 import AdminStaffManagement from "./pages/AdminStaffManagement";
@@ -198,6 +199,11 @@ const AppRoutes = () => {
         <Route path="/staff/timetable" element={
           <ProtectedRoute requiredRole="staff">
             <StaffTimetableManagement />
+          </ProtectedRoute>
+        } />
+        <Route path="/staff/ai-assistant" element={
+          <ProtectedRoute requiredRole="staff">
+            <StaffAIAssistantPage />
           </ProtectedRoute>
         } />
 

@@ -21,6 +21,7 @@ import {
 import { useAuthStore } from '@/stores/authStore';
 import { useDarkMode } from '@/contexts/DarkModeContext';
 import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 interface StaffMember {
   id: string;
@@ -32,6 +33,8 @@ interface StaffMember {
   created_at: string;
   status: 'active' | 'inactive';
   subjects?: string[];
+  address?: string | null;
+  password?: string | null;
 }
 
 const AdminStaffManagement = () => {
@@ -45,6 +48,56 @@ const AdminStaffManagement = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingStaff, setEditingStaff] = useState<StaffMember | null>(null);
 
+  const [newStaff, setNewStaff] = useState<Partial<StaffMember>>({
+    staff_code: '',
+    full_name: '',
+    email: '',
+    phone: '',
+    department: '',
+    status: 'active'
+  });
+
+  const handleAddStaff = () => {
+    if (!newStaff.full_name || !newStaff.staff_code) {
+      toast.error('Please fill in at least name and staff code');
+      return;
+    }
+    
+    const staffMember: StaffMember = {
+      id: Math.random().toString(36).substring(7),
+      staff_code: newStaff.staff_code || '',
+      full_name: newStaff.full_name || '',
+      email: newStaff.email || null,
+      phone: newStaff.phone || null,
+      department: newStaff.department || null,
+      created_at: new Date().toISOString().split('T')[0],
+      status: (newStaff.status as 'active' | 'inactive') || 'active',
+      subjects: []
+    };
+    
+    setStaffList([...staffList, staffMember]);
+    setNewStaff({
+      staff_code: '',
+      full_name: '',
+      email: '',
+      phone: '',
+      department: '',
+      status: 'active'
+    });
+    setShowAddModal(false);
+    toast.success('Staff member added successfully');
+  };
+
+  const handleUpdateStaff = () => {
+    if (!editingStaff || !editingStaff.full_name || !editingStaff.staff_code) {
+      toast.error('Name and Staff Code are required');
+      return;
+    }
+    setStaffList(staffList.map(staff => staff.id === editingStaff.id ? editingStaff : staff));
+    setEditingStaff(null);
+    toast.success('Staff details updated successfully');
+  };
+
   // Mock data for demonstration
   const mockStaff: StaffMember[] = [
     {
@@ -56,7 +109,8 @@ const AdminStaffManagement = () => {
       department: 'Computer Science',
       created_at: '2024-01-15',
       status: 'active',
-      subjects: ['Data Structures', 'Algorithms', 'Database Systems']
+      subjects: ['Data Structures', 'Algorithms', 'Database Systems'],
+      address: '123 Tech Lane, Tech City'
     },
     {
       id: '2',
@@ -94,12 +148,28 @@ const AdminStaffManagement = () => {
   ];
 
   useEffect(() => {
-    // Simulate loading data
+    // Simulate loading data & check localStorage
     setTimeout(() => {
-      setStaffList(mockStaff);
+      const savedStaff = localStorage.getItem('eduflow_staff_list');
+      if (savedStaff) {
+        try {
+          setStaffList(JSON.parse(savedStaff));
+        } catch (e) {
+          setStaffList(mockStaff);
+        }
+      } else {
+        setStaffList(mockStaff);
+      }
       setLoading(false);
     }, 1000);
   }, []);
+
+  // Sync state to local storage whenever list changes
+  useEffect(() => {
+    if (!loading && staffList.length > 0) {
+      localStorage.setItem('eduflow_staff_list', JSON.stringify(staffList));
+    }
+  }, [staffList, loading]);
 
   const filteredStaff = staffList.filter(staff => {
     const matchesSearch = staff.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -188,8 +258,6 @@ const AdminStaffManagement = () => {
           </Button>
           </div>
         </div>
-      </div>
-
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
@@ -378,6 +446,123 @@ const AdminStaffManagement = () => {
         </CardContent>
       </Card>
       </div>
+
+      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Staff Member</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Full Name</label>
+              <Input 
+                placeholder="e.g. John Doe" 
+                value={newStaff.full_name || ''} 
+                onChange={(e) => setNewStaff({...newStaff, full_name: e.target.value})}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Staff Code</label>
+              <Input 
+                placeholder="e.g. IT003" 
+                value={newStaff.staff_code || ''} 
+                onChange={(e) => setNewStaff({...newStaff, staff_code: e.target.value})}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Email</label>
+              <Input 
+                type="email"
+                placeholder="e.g. john@eduflow.com" 
+                value={newStaff.email || ''} 
+                onChange={(e) => setNewStaff({...newStaff, email: e.target.value})}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Department</label>
+              <Input 
+                placeholder="e.g. Computer Science" 
+                value={newStaff.department || ''} 
+                onChange={(e) => setNewStaff({...newStaff, department: e.target.value})}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddModal(false)}>Cancel</Button>
+            <Button onClick={handleAddStaff}>Add Staff</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Staff Modal */}
+      <Dialog open={!!editingStaff} onOpenChange={(open) => !open && setEditingStaff(null)}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Staff Details</DialogTitle>
+          </DialogHeader>
+          {editingStaff && (
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Full Name</label>
+                <Input 
+                  value={editingStaff.full_name} 
+                  onChange={(e) => setEditingStaff({...editingStaff, full_name: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Staff Code</label>
+                <Input 
+                  value={editingStaff.staff_code} 
+                  onChange={(e) => setEditingStaff({...editingStaff, staff_code: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Email</label>
+                <Input 
+                  type="email"
+                  value={editingStaff.email || ''} 
+                  onChange={(e) => setEditingStaff({...editingStaff, email: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Phone</label>
+                <Input 
+                  value={editingStaff.phone || ''} 
+                  onChange={(e) => setEditingStaff({...editingStaff, phone: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Department</label>
+                <Input 
+                  value={editingStaff.department || ''} 
+                  onChange={(e) => setEditingStaff({...editingStaff, department: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Address</label>
+                <Input 
+                  value={editingStaff.address || ''} 
+                  onChange={(e) => setEditingStaff({...editingStaff, address: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2 pt-4 border-t">
+                <label className="text-sm font-medium text-destructive">Reset Password</label>
+                <Input 
+                  type="password"
+                  placeholder="Enter new password to reset" 
+                  value={editingStaff.password || ''} 
+                  onChange={(e) => setEditingStaff({...editingStaff, password: e.target.value})}
+                />
+                <p className="text-xs text-muted-foreground">Leave blank if you do not want to change the password.</p>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingStaff(null)}>Cancel</Button>
+            <Button onClick={handleUpdateStaff}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };

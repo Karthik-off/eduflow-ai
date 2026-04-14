@@ -82,6 +82,12 @@ const EnhancedAIAssistant = ({
         'View my academic performance',
         'Exam preparation help'
       ],
+      staff: [
+        'How do I record attendance?',
+        'Help me analyze student performance',
+        'Create a lesson plan for today',
+        'Tips for better classroom management'
+      ],
       attendance: [
         'My attendance percentage',
         'Apply for attendance regularization',
@@ -227,6 +233,7 @@ const EnhancedAIAssistant = ({
           {context?.module === 'admin' && 'Admin AI Assistant'}
           {context?.module === 'fees' && 'Fee AI Assistant'}
           {context?.module === 'student' && 'Student AI Assistant'}
+          {context?.module === 'staff' && 'Staff AI Assistant'}
           {context?.module === 'attendance' && 'Attendance AI Assistant'}
           {context?.module === 'academics' && 'Academic AI Assistant'}
           {!context?.module && 'EduFlow AI Assistant'}
@@ -340,6 +347,7 @@ const EnhancedAIAssistant = ({
               context?.module === 'admin' ? 'Ask me about administrative tasks...' :
               context?.module === 'fees' ? 'Ask me about fees and payments...' :
               context?.module === 'student' ? 'Ask me about student services...' :
+              context?.module === 'staff' ? 'Ask me about teaching, grading, attendance...' :
               context?.module === 'attendance' ? 'Ask me about attendance...' :
               context?.module === 'academics' ? 'Ask me about academics...' :
               'Ask me anything...'
@@ -373,6 +381,7 @@ function generateWelcomeMessage(context?: AIContext): string {
     admin: "Hello! I'm your AI Admin Assistant. I can help you with:\n\n• Staff management and assignments\n• Student oversight and analytics\n• Report generation and data analysis\n• System configuration and settings\n• Class and timetable management\n• Financial oversight\n\nWhat administrative task can I help you with today?",
     fees: "Hello! I'm your Fee AI Assistant. I can help you with:\n\n• Check your current fee status\n• Make online payments\n• Download payment receipts\n• View payment history\n• Understand fee breakdowns\n• Payment reminders and due dates\n\nWhat fee-related information do you need?",
     student: "Hello! I'm your Student AI Assistant. I can help you with:\n\n• Profile management\n• Academic performance tracking\n• Attendance records\n• Fee payments and receipts\n• Course information\n• Campus services\n\nWhat would you like help with today?",
+    staff: "Hello! I'm your Staff AI Assistant. I can help you with:\n\n• Recording and managing attendance\n• Student performance analysis\n• Marks entry and grading\n• Lesson planning and teaching resources\n• Timetable and schedule management\n• Classroom management strategies\n\nWhat can I help you with today?",
     attendance: "Hello! I'm your Attendance AI Assistant. I can help you with:\n\n• View detailed attendance records\n• Track attendance trends\n• Apply for attendance regularization\n• Subject-wise attendance analysis\n• Attendance improvement tips\n\nWhat attendance information would you like to explore?",
     academics: "Hello! I'm your Academic AI Assistant. I can help you with:\n\n• Study material recommendations\n• Concept explanations\n• Practice problems and solutions\n• Exam preparation guides\n• Performance analysis\n• Learning path recommendations\n\nWhat academic area would you like help with?"
   };

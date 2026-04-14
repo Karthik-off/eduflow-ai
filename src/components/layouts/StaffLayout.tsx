@@ -8,7 +8,7 @@ import SearchBar from '@/components/SearchBar';
 import NotificationDropdown from '@/components/NotificationDropdown';
 import LiveDateTime from '@/components/common/LiveDateTime';
 import { useDarkMode } from '@/contexts/DarkModeContext';
-import { Briefcase, LogOut, Home, Users, GraduationCap, ClipboardList, Calendar, Clock, FileText, Settings, Sun, Moon } from 'lucide-react';
+import { Briefcase, LogOut, Home, Users, GraduationCap, ClipboardList, Calendar, Clock, FileText, Settings, Sun, Moon, Bot } from 'lucide-react';
 
 interface StaffLayoutProps {
   children: React.ReactNode;
@@ -40,6 +40,7 @@ const StaffLayout: React.FC<StaffLayoutProps> = ({ children, title }) => {
     { icon: Calendar, label: 'Calendar', active: location.pathname.includes('/staff/calendar'), path: '/staff/calendar' },
     { icon: Clock, label: 'Timetable', active: location.pathname.includes('/staff/timetable'), path: '/staff/timetable' },
     { icon: FileText, label: 'Reports', active: location.pathname.includes('/staff/reports'), path: '/staff/reports' },
+    { icon: Bot, label: 'AI Assistant', active: location.pathname.includes('/staff/ai-assistant'), path: '/staff/ai-assistant' },
     { icon: Settings, label: 'Settings', active: location.pathname.includes('/staff/settings'), path: '/staff/settings' },
   ];
 

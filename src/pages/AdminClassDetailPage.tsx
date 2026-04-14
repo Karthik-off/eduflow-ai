@@ -389,13 +389,7 @@ const AdminClassDetailPage = () => {
               <p className="text-[10px] text-muted-foreground">
                 {classInfo?.department?.name} ({classInfo?.department?.code}) · {classInfo?.semester?.label}
               </p>
-          </Button>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-sm font-bold font-display text-foreground truncate">{classInfo?.name ?? 'Class'}</h1>
-            <p className="text-[10px] text-muted-foreground">
-              {classInfo?.department?.name} ({classInfo?.department?.code}) · {classInfo?.semester?.label}
-            </p>
-          </div>
+            </div>
         </div>
       </header>
 
