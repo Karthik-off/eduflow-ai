@@ -275,7 +275,7 @@ const PremiumLayout: React.FC<PremiumLayoutProps> = ({ children, title, userRole
         </main>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from {
             opacity: 0;

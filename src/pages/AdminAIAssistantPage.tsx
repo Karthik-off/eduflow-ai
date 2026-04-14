@@ -92,6 +92,7 @@ const AdminAIAssistantPage = () => {
 
           {/* Enhanced AI Assistant — 2 cols */}
           <div className="lg:col-span-2">
+<<<<<<< HEAD
             <EnhancedAIAssistant
               context={aiContext}
               height="620px"
@@ -101,6 +102,13 @@ const AdminAIAssistantPage = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
+=======
+            <EnhancedAIAssistant 
+                context={aiContext} 
+                className="h-[600px]"
+              />
+            </div>
+>>>>>>> b4a5f06a9d4e8787e0f5dc4967484ab723a361ec
 
             {/* Quick Actions */}
             <Card className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
@@ -132,9 +140,8 @@ const AdminAIAssistantPage = () => {
             </Card>
 
           </div>
-        </div>
       </div>
-    </AdminLayout>
+    </div>
   );
 };
 

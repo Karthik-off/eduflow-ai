@@ -130,8 +130,8 @@ Keep it under 160 characters, professional and non-alarming.`;
       status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
-  } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
+  } catch (err: unknown) {
+    return new Response(JSON.stringify({ error: (err as Error).message }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }

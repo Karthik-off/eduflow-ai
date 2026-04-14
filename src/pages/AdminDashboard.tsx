@@ -41,14 +41,14 @@ interface StaffMember {
 interface Student {
   id: string;
   roll_number: string;
-  name: string;
+  full_name: string;
   email: string | null;
   phone: string | null;
-  department: string | null;
-  year: string | null;
+  department_id: string | null;
   cgpa: number | null;
   created_at: string;
-  updated_at: string | null;
+  updated_at: string;
+  [key: string]: any;
 }
 
 interface ExcelStudent {
@@ -162,7 +162,7 @@ const AdminDashboard = () => {
       console.log('AdminDashboard: Fetching students from Supabase...');
       const { data, error } = await supabase
         .from('students')
-        .select('id, roll_number, name, email, phone, department, year, cgpa, created_at, updated_at')
+        .select('id, roll_number, full_name, email, phone, department_id, cgpa, created_at, updated_at')
         .order('created_at', { ascending: false });
       
       if (error) {
@@ -572,14 +572,16 @@ const AdminDashboard = () => {
 
     try {
       // Create new student (mock implementation - replace with actual API call)
-      const newStudent = {
+      const newStudent: Student = {
         id: Date.now().toString(),
         roll_number: `STU${Date.now()}`,
         full_name: studentFormData.name,
         email: `${studentFormData.name.toLowerCase().replace(/\s+/g, '.')}@student.edu`,
         phone: studentFormData.phoneNumber,
+        department_id: null,
         cgpa: null,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
 
       // For now, add to local state (replace with actual API call)
@@ -641,7 +643,7 @@ const AdminDashboard = () => {
       }
 
       // Check required columns
-      const firstRow = jsonData[0];
+      const firstRow = jsonData[0] as Record<string, unknown>;
       const requiredColumns = ['name', 'age', 'dept', 'phone'];
       const missingColumns = requiredColumns.filter(col => !(col in firstRow));
 
@@ -651,15 +653,17 @@ const AdminDashboard = () => {
       }
 
       // Process Excel data
-      const newStudents: Student[] = jsonData.map((row: any, index) => {
+      const newStudents: Student[] = (jsonData as any[]).map((row: any, index) => {
         const student: Student = {
           id: Date.now().toString() + index,
           roll_number: `STU${Date.now()}${index}`,
           full_name: row.name || '',
           email: `${(row.name || '').toLowerCase().replace(/\s+/g, '.')}@student.edu`,
           phone: row.phone || null,
+          department_id: null,
           cgpa: null,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         };
 
         // Add department info if available
@@ -792,11 +796,6 @@ const AdminDashboard = () => {
               >
                 <item.icon className="w-5 h-5" />
                 <span className="font-medium">{item.label}</span>
-                {item.badge && (
-                  <span className="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                    {item.badge}
-                  </span>
-                )}
               </Link>
             ))}
           </div>
