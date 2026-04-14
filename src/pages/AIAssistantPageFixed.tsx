@@ -32,10 +32,10 @@ const AIAssistantPageFixed = () => {
     studentData: studentProfile
       ? {
           name: studentProfile.full_name,
-          rollNo: studentProfile.roll_no,
-          department: studentProfile.department,
-          year: studentProfile.year_of_study,
-          section: studentProfile.section
+          rollNo: studentProfile.roll_number,
+          department: studentProfile.department_id || '',
+          year: '',
+          section: studentProfile.section_id || ''
         }
       : undefined
   };
