@@ -167,10 +167,7 @@ const AdminReports = () => {
 
   return (
     <AdminLayout title="Analytics & Reports">
-<<<<<<< HEAD
       <div className="container mx-auto p-6 space-y-6">
-=======
->>>>>>> b4a5f06a9d4e8787e0f5dc4967484ab723a361ec
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -393,6 +390,7 @@ const AdminReports = () => {
           </div>
         </CardContent>
       </Card>
+      </div>
     </AdminLayout>
   );
 };

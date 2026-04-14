@@ -3,18 +3,8 @@ import AdminLayout from '@/components/layouts/AdminLayout';
 import { useAuthStore } from '@/stores/authStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  Bot,
-  Users,
-  Shield,
-  BarChart3,
-  FileText,
-  Settings,
-  Activity,
-  BookOpen,
-  Calendar,
-  GraduationCap,
-  Sparkles,
-  Zap
+  Bot, Users, Shield, BarChart3, FileText, Settings, Activity,
+  BookOpen, Calendar, GraduationCap, Sparkles, Zap
 } from 'lucide-react';
 import { useDarkMode } from '@/contexts/DarkModeContext';
 import EnhancedAIAssistant from '@/components/ai/EnhancedAIAssistant';
@@ -25,7 +15,6 @@ const AdminAIAssistantPage = () => {
   const navigate = useNavigate();
   const { isDarkMode } = useDarkMode();
 
-  // AI context for admin module
   const aiContext: AIContext = {
     module: 'admin',
     userRole: 'admin',
@@ -52,7 +41,6 @@ const AdminAIAssistantPage = () => {
   return (
     <AdminLayout title="AI Assistant">
       <div className="space-y-6">
-
         {/* Banner */}
         <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 rounded-2xl p-6 shadow-lg">
           <div className="flex items-center gap-4 flex-wrap">
@@ -89,10 +77,7 @@ const AdminAIAssistantPage = () => {
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-          {/* Enhanced AI Assistant — 2 cols */}
           <div className="lg:col-span-2">
-<<<<<<< HEAD
             <EnhancedAIAssistant
               context={aiContext}
               height="620px"
@@ -100,17 +85,7 @@ const AdminAIAssistantPage = () => {
             />
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-6">
-=======
-            <EnhancedAIAssistant 
-                context={aiContext} 
-                className="h-[600px]"
-              />
-            </div>
->>>>>>> b4a5f06a9d4e8787e0f5dc4967484ab723a361ec
-
-            {/* Quick Actions */}
             <Card className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
               <CardHeader>
                 <CardTitle className={`text-lg flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
@@ -138,10 +113,10 @@ const AdminAIAssistantPage = () => {
                 ))}
               </CardContent>
             </Card>
-
           </div>
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 };
 

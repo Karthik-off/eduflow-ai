@@ -390,13 +390,8 @@ const AdminClassDetailPage = () => {
                 {classInfo?.department?.name} ({classInfo?.department?.code}) · {classInfo?.semester?.label}
               </p>
             </div>
-<<<<<<< HEAD
-        </div>
-      </header>
-=======
           </div>
         </header>
->>>>>>> b4a5f06a9d4e8787e0f5dc4967484ab723a361ec
 
       <main className="px-4 py-5 max-w-5xl mx-auto space-y-5">
         {/* Quick Stats */}
