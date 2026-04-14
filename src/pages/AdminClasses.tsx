@@ -387,7 +387,7 @@ const AdminClasses = () => {
                       <span className="text-xs">{cls.schedule}</span>
                     </div>
                   </div>
-                </CardHeader>
+                </CardContent>
                 <CardContent>
 
                   <div className="border-t pt-3">
@@ -458,6 +458,7 @@ const AdminClasses = () => {
           </div>
         </CardContent>
       </Card>
+      </div>
     </AdminLayout>
   );
 };
