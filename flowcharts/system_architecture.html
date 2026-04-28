@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduFlow System Architecture</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .flowchart {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .layer {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+        .user-layer {
+            background-color: #E3F2FD;
+            border-color: #1976D2;
+        }
+        .app-layer {
+            background-color: #F3E5F5;
+            border-color: #7B1FA2;
+        }
+        .service-layer {
+            background-color: #E8F5E8;
+            border-color: #388E3C;
+        }
+        .db-layer {
+            background-color: #FFF3E0;
+            border-color: #F57C00;
+        }
+        .external-layer {
+            background-color: #FFEBEE;
+            border-color: #D32F2F;
+        }
+        .module {
+            display: inline-block;
+            margin: 10px;
+            padding: 15px 25px;
+            border-radius: 6px;
+            border: 2px solid;
+            text-align: center;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        .module:hover {
+            transform: scale(1.05);
+        }
+        .user-module {
+            background-color: #BBDEFB;
+            border-color: #1565C0;
+            color: #1565C0;
+        }
+        .app-module {
+            background-color: #E1BEE7;
+            border-color: #6A1B9A;
+            color: #6A1B9A;
+        }
+        .service-module {
+            background-color: #C8E6C9;
+            border-color: #2E7D32;
+            color: #2E7D32;
+        }
+        .db-module {
+            background-color: #FFE0B2;
+            border-color: #E65100;
+            color: #E65100;
+        }
+        .external-module {
+            background-color: #FFCDD2;
+            border-color: #C62828;
+            color: #C62828;
+        }
+        .arrow {
+            stroke: #555;
+            stroke-width: 2;
+            fill: none;
+            marker-end: url(#arrowhead);
+        }
+        .title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .layer-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .modules-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="flowchart">
+        <div class="title">EduFlow System Architecture</div>
+        
+        <!-- User Layer -->
+        <div class="layer user-layer">
+            <div class="layer-title">USER LAYER</div>
+            <div class="modules-container">
+                <div class="module user-module">Students</div>
+                <div class="module user-module">Staff</div>
+                <div class="module user-module">Admin</div>
+            </div>
+        </div>
+
+        <!-- Application Layer -->
+        <div class="layer app-layer">
+            <div class="layer-title">APPLICATION LAYER</div>
+            <div class="modules-container">
+                <div class="module app-module">Student Module</div>
+                <div class="module app-module">Staff Module</div>
+                <div class="module app-module">Admin Module</div>
+            </div>
+        </div>
+
+        <!-- Service Layer -->
+        <div class="layer service-layer">
+            <div class="layer-title">SERVICE LAYER</div>
+            <div class="modules-container">
+                <div class="module service-module">Authentication</div>
+                <div class="module service-module">AI Assistant</div>
+                <div class="module service-module">Data Service</div>
+            </div>
+        </div>
+
+        <!-- Database Layer -->
+        <div class="layer db-layer">
+            <div class="layer-title">DATABASE LAYER</div>
+            <div class="modules-container">
+                <div class="module db-module">Users/Profiles</div>
+                <div class="module db-module">Academic Data</div>
+                <div class="module db-module">System Config</div>
+            </div>
+        </div>
+
+        <!-- External Services -->
+        <div class="layer external-layer">
+            <div class="layer-title">EXTERNAL SERVICES</div>
+            <div class="modules-container">
+                <div class="module external-module">Supabase</div>
+                <div class="module external-module">Payment Gateway</div>
+                <div class="module external-module">AI APIs</div>
+            </div>
+        </div>
+    </div>
+
+    <svg width="0" height="0">
+        <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                    refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#555" />
+            </marker>
+        </defs>
+    </svg>
+</body>
+</html>

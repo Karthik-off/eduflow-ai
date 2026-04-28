@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Module Flowchart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .flowchart {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #D32F2F;
+        }
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .node {
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 2px solid;
+            text-align: center;
+            font-weight: bold;
+            min-width: 150px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .start-node {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border-color: #388E3C;
+            color: white;
+        }
+        .end-node {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            border-color: #E65100;
+            color: white;
+        }
+        .process-node {
+            background: linear-gradient(135deg, #F44336, #D32F2F);
+            border-color: #B71C1C;
+            color: white;
+        }
+        .decision-node {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            border-color: #E65100;
+            color: white;
+            position: relative;
+            margin: 20px 0;
+        }
+        .admin-node {
+            background: linear-gradient(135deg, #673AB7, #512DA8);
+            border-color: #4527A0;
+            color: white;
+        }
+        .row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .vertical-arrow {
+            width: 2px;
+            height: 40px;
+            background: #555;
+            position: relative;
+            margin: 0 auto;
+        }
+        .vertical-arrow::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -4px;
+            width: 0;
+            height: 0;
+            border-top: 8px solid #555;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+        }
+        .label {
+            font-size: 12px;
+            color: #666;
+            margin: 5px 0;
+            text-align: center;
+        }
+        .admin-functions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 900px;
+        }
+        .admin-function {
+            padding: 12px 15px;
+            background: linear-gradient(135deg, #FFEBEE, #FFCDD2);
+            border: 2px solid #D32F2F;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #C62828;
+            transition: transform 0.2s;
+        }
+        .admin-function:hover {
+            transform: scale(1.05);
+        }
+        .sub-functions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .sub-function {
+            padding: 8px 12px;
+            background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+            border: 1px solid #F57C00;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 12px;
+            color: #E65100;
+        }
+        .system-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .system-action {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #E8F5E8, #C8E6C9);
+            border: 2px solid #388E3C;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: bold;
+            color: #2E7D32;
+        }
+    </style>
+</head>
+<body>
+    <div class="flowchart">
+        <div class="title">Admin Module User Journey</div>
+        
+        <div class="flow-container">
+            <!-- Start -->
+            <div class="node start-node">Admin Login</div>
+            <div class="vertical-arrow"></div>
+            
+            <!-- Authentication -->
+            <div class="node admin-node">Admin Authentication</div>
+            <div class="label">Multi-factor Security Check</div>
+            <div class="vertical-arrow"></div>
+            
+            <!-- Dashboard -->
+            <div class="node process-node">Admin Dashboard</div>
+            <div class="label">System Overview, Quick Actions, Analytics</div>
+            
+            <!-- Main Functions Decision -->
+            <div class="node decision-node">Select Administrative Function</div>
+            
+            <!-- Main Admin Functions -->
+            <div class="admin-functions">
+                <div class="admin-function">Staff Management</div>
+                <div class="admin-function">Student Management</div>
+                <div class="admin-function">Class Management</div>
+                <div class="admin-function">Timetable Admin</div>
+                <div class="admin-function">Reports & Analytics</div>
+                <div class="admin-function">System Settings</div>
+                <div class="admin-function">AI Assistant</div>
+                <div class="admin-function">Department Mgmt</div>
+                <div class="admin-function">User Accounts</div>
+            </div>
+            
+            <!-- Sub-functions -->
+            <div class="node decision-node">Choose Specific Action</div>
+            
+            <div class="sub-functions">
+                <div class="sub-function">Create Staff</div>
+                <div class="sub-function">Assign Roles</div>
+                <div class="sub-function">Manage Permissions</div>
+                <div class="sub-function">Bulk Import</div>
+                <div class="sub-function">Add Students</div>
+                <div class="sub-function">Student Records</div>
+                <div class="sub-function">Academic Data</div>
+                <div class="sub-function">Enrollment</div>
+                <div class="sub-function">Create Classes</div>
+                <div class="sub-function">Assign Teachers</div>
+                <div class="sub-function">Class Schedule</div>
+                <div class="sub-function">Resources</div>
+                <div class="sub-function">Generate Reports</div>
+                <div class="sub-function">Analytics</div>
+                <div class="sub-function">Export Data</div>
+                <div class="sub-function">System Config</div>
+            </div>
+            
+            <!-- System Operations -->
+            <div class="node admin-node">System Operations</div>
+            <div class="label">Database Management, User Control, System Monitoring</div>
+            
+            <div class="system-actions">
+                <div class="system-action">Validate Data</div>
+                <div class="system-action">Process Requests</div>
+                <div class="system-action">Update Database</div>
+                <div class="system-action">Generate Logs</div>
+            </div>
+            
+            <div class="vertical-arrow"></div>
+            
+            <!-- Security Check -->
+            <div class="node decision-node">Security Validation</div>
+            
+            <div class="row">
+                <div class="node admin-node">Authorize Operation</div>
+                <div class="node process-node">Security Alert</div>
+            </div>
+            
+            <div class="vertical-arrow"></div>
+            
+            <!-- System Update -->
+            <div class="node process-node">Update System</div>
+            <div class="label">Real-time Updates, Notifications, Audit Trail</div>
+            <div class="vertical-arrow"></div>
+            
+            <!-- Monitoring -->
+            <div class="node admin-node">System Monitoring</div>
+            <div class="label">Performance Metrics, User Activity, System Health</div>
+            <div class="vertical-arrow"></div>
+            
+            <!-- End -->
+            <div class="node end-node">Admin Session Complete</div>
+        </div>
+    </div>
+</body>
+</html>

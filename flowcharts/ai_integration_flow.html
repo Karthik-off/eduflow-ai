@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Integration Flowchart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .flowchart {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #6A1B9A;
+        }
+        .ai-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        .ai-section {
+            background: linear-gradient(135deg, #F3E5F5, #E1BEE7);
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #9C27B0;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #6A1B9A;
+            text-align: center;
+        }
+        .ai-tools-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .ai-tool {
+            background: linear-gradient(135deg, #E1BEE7, #CE93D8);
+            padding: 15px;
+            border-radius: 6px;
+            border: 2px solid #7B1FA2;
+            text-align: center;
+            font-weight: bold;
+            color: #4A148C;
+            transition: transform 0.2s;
+        }
+        .ai-tool:hover {
+            transform: scale(1.05);
+        }
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .flow-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .ai-node {
+            padding: 12px 20px;
+            border-radius: 6px;
+            border: 2px solid;
+            text-align: center;
+            font-weight: bold;
+            min-width: 130px;
+            transition: transform 0.2s;
+        }
+        .ai-node:hover {
+            transform: scale(1.05);
+        }
+        .input-node {
+            background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+            border-color: #1976D2;
+            color: #1565C0;
+        }
+        .processing-node {
+            background: linear-gradient(135deg, #F3E5F5, #E1BEE7);
+            border-color: #7B1FA2;
+            color: #6A1B9A;
+        }
+        .api-node {
+            background: linear-gradient(135deg, #E8F5E8, #C8E6C9);
+            border-color: #388E3C;
+            color: #2E7D32;
+        }
+        .output-node {
+            background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+            border-color: #F57C00;
+            color: #E65100;
+        }
+        .arrow {
+            color: #666;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .data-flow {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            margin: 10px 0;
+        }
+        .data-flow-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #495057;
+            text-align: center;
+        }
+        .context-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .context-item {
+            background: linear-gradient(135deg, #E8F5E8, #C8E6C9);
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #4CAF50;
+            text-align: center;
+            font-size: 12px;
+            color: #2E7D32;
+        }
+        .integration-points {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .integration-point {
+            background: linear-gradient(135deg, #FFEBEE, #FFCDD2);
+            padding: 12px;
+            border-radius: 6px;
+            border: 2px solid #D32F2F;
+            text-align: center;
+            font-weight: bold;
+            color: #C62828;
+        }
+    </style>
+</head>
+<body>
+    <div class="flowchart">
+        <div class="title">EduFlow AI Assistant Integration Flow</div>
+        
+        <div class="ai-container">
+            <!-- AI Tools Overview -->
+            <div class="ai-section">
+                <div class="section-title">AI Assistant Tools</div>
+                <div class="ai-tools-grid">
+                    <div class="ai-tool">Chat Assistant</div>
+                    <div class="ai-tool">Performance Insights</div>
+                    <div class="ai-tool">Study Materials</div>
+                    <div class="ai-tool">Concept Explainer</div>
+                    <div class="ai-tool">Learning Paths</div>
+                    <div class="ai-tool">Exam Preparation</div>
+                    <div class="ai-tool">Class Analysis</div>
+                </div>
+            </div>
+
+            <!-- AI Query Processing Flow -->
+            <div class="ai-section">
+                <div class="section-title">AI Query Processing Flow</div>
+                <div class="flow-diagram">
+                    <div class="flow-row">
+                        <div class="ai-node input-node">User Query</div>
+                        <div class="arrow">-></div>
+                        <div class="ai-node processing-node">Query Classification</div>
+                        <div class="arrow">-></div>
+                        <div class="ai-node processing-node">Context Analysis</div>
+                    </div>
+                    <div class="flow-row">
+                        <div class="ai-node processing-node">Context Analysis</div>
+                        <div class="arrow">-></div>
+                        <div class="ai-node api-node">AI Model API</div>
+                        <div class="arrow">-></div>
+                        <div class="ai-node processing-node">Response Generation</div>
+                    </div>
+                    <div class="flow-row">
+                        <div class="ai-node processing-node">Response Generation</div>
+                        <div class="arrow">-></div>
+                        <div class="ai-node output-node">Personalized Response</div>
+                        <div class="arrow">-></div>
+                        <div class="ai-node output-node">User Interface</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Context Flow -->
+            <div class="ai-section">
+                <div class="section-title">AI Data Context Integration</div>
+                <div class="data-flow">
+                    <div class="data-flow-title">Student Data Context</div>
+                    <div class="context-flow">
+                        <div class="context-item">Academic Performance</div>
+                        <div class="context-item">Attendance Records</div>
+                        <div class="context-item">Fee Status</div>
+                        <div class="context-item">Subject Preferences</div>
+                        <div class="context-item">Learning Patterns</div>
+                    </div>
+                </div>
+                
+                <div class="flow-diagram">
+                    <div class="flow-row">
+                        <div class="ai-node input-node">Student Data</div>
+                        <div class="arrow">-></div>
+                        <div class="ai-node processing-node">Data Processing</div>
+                        <div class="arrow">-></div>
+                        <div class="ai-node api-node">AI Analysis</div>
+                    </div>
+                    <div class="flow-row">
+                        <div class="ai-node api-node">AI Analysis</div>
+                        <div class="arrow">-></div>
+                        <div class="ai-node output-node">Insights Generation</div>
+                        <div class="arrow">-></div>
+                        <div class="ai-node output-node">Recommendations</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Integration Points -->
+            <div class="ai-section">
+                <div class="section-title">AI Integration Points</div>
+                <div class="integration-points">
+                    <div class="integration-point">Performance Analysis</div>
+                    <div class="integration-point">Weak Subject Detection</div>
+                    <div class="integration-point">Study Recommendations</div>
+                    <div class="integration-point">Exam Risk Assessment</div>
+                    <div class="integration-point">Learning Path Optimization</div>
+                    <div class="integration-point">Resource Suggestions</div>
+                </div>
+            </div>
+
+            <!-- Real-time AI Features -->
+            <div class="ai-section">
+                <div class="section-title">Real-time AI Features</div>
+                <div class="flow-diagram">
+                    <div class="flow-row">
+                        <div class="ai-node input-node">Live Data Stream</div>
+                        <div class="arrow">-></div>
+                        <div class="ai-node processing-node">AI Processing</div>
+                        <div class="arrow">-></div>
+                        <div class="ai-node output-node">Real-time Insights</div>
+                    </div>
+                    <div class="flow-row">
+                        <div class="ai-node output-node">Real-time Insights</div>
+                        <div class="arrow">-></div>
+                        <div class="ai-node output-node">Dashboard Updates</div>
+                        <div class="arrow">-></div>
+                        <div class="ai-node output-node">User Notifications</div>
+                    </div>
+                </div>
+                
+                <div class="data-flow">
+                    <div class="data-flow-title">AI-Powered Features</div>
+                    <div class="context-flow">
+                        <div class="context-item">Predictive Analytics</div>
+                        <div class="context-item">Personalized Learning</div>
+                        <div class="context-item">Automated Alerts</div>
+                        <div class="context-item">Smart Recommendations</div>
+                        <div class="context-item">Performance Tracking</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

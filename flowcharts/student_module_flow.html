@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Module Flowchart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .flowchart {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #1976D2;
+        }
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .node {
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 2px solid;
+            text-align: center;
+            font-weight: bold;
+            min-width: 150px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .start-node {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border-color: #388E3C;
+            color: white;
+        }
+        .end-node {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            border-color: #E65100;
+            color: white;
+        }
+        .process-node {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            border-color: #1565C0;
+            color: white;
+        }
+        .decision-node {
+            background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+            border-color: #6A1B9A;
+            color: white;
+            position: relative;
+            margin: 20px 0;
+        }
+        .sub-module {
+            background: linear-gradient(135deg, #FFC107, #FFA000);
+            border-color: #FF8F00;
+            color: #333;
+        }
+        .row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .arrow {
+            width: 40px;
+            height: 2px;
+            background: #555;
+            position: relative;
+        }
+        .arrow::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #555;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .vertical-arrow {
+            width: 2px;
+            height: 40px;
+            background: #555;
+            position: relative;
+            margin: 0 auto;
+        }
+        .vertical-arrow::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -4px;
+            width: 0;
+            height: 0;
+            border-top: 8px solid #555;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+        }
+        .label {
+            font-size: 12px;
+            color: #666;
+            margin: 5px 0;
+            text-align: center;
+        }
+        .sub-modules {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+            width: 100%;
+        }
+        .sub-module-item {
+            padding: 12px 15px;
+            background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+            border: 2px solid #1976D2;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #1565C0;
+            transition: transform 0.2s;
+        }
+        .sub-module-item:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="flowchart">
+        <div class="title">Student Module User Journey</div>
+        
+        <div class="flow-container">
+            <!-- Start -->
+            <div class="node start-node">Student Login</div>
+            <div class="vertical-arrow"></div>
+            
+            <!-- Authentication -->
+            <div class="node process-node">Authentication Check</div>
+            <div class="vertical-arrow"></div>
+            
+            <!-- Dashboard -->
+            <div class="node process-node">Student Dashboard</div>
+            <div class="label">View CGPA, Attendance, Quick Stats</div>
+            
+            <!-- Navigation Decision -->
+            <div class="node decision-node">Choose Module</div>
+            
+            <!-- Sub-modules -->
+            <div class="sub-modules">
+                <div class="sub-module-item">Profile Management</div>
+                <div class="sub-module-item">Academic Performance</div>
+                <div class="sub-module-item">Attendance Tracking</div>
+                <div class="sub-module-item">Fee Management</div>
+                <div class="sub-module-item">Examination Center</div>
+                <div class="sub-module-item">AI Assistant</div>
+                <div class="sub-module-item">Alert System</div>
+                <div class="sub-module-item">Settings</div>
+                <div class="sub-module-item">Logout</div>
+            </div>
+            
+            <!-- Module Details -->
+            <div class="node decision-node">Select Feature</div>
+            
+            <!-- Feature Examples -->
+            <div class="row">
+                <div class="node sub-module">View Profile</div>
+                <div class="node sub-module">Edit Profile</div>
+                <div class="node sub-module">View Marks</div>
+                <div class="node sub-module">Check Attendance</div>
+                <div class="node sub-module">Pay Fees</div>
+                <div class="node sub-module">AI Chat</div>
+            </div>
+            
+            <div class="vertical-arrow"></div>
+            
+            <!-- Process Actions -->
+            <div class="node process-node">Process Request</div>
+            <div class="label">Database Operations, AI Processing</div>
+            <div class="vertical-arrow"></div>
+            
+            <!-- Display Results -->
+            <div class="node process-node">Display Results</div>
+            <div class="label">Show Updated Information</div>
+            <div class="vertical-arrow"></div>
+            
+            <!-- End -->
+            <div class="node end-node">Session Complete</div>
+        </div>
+    </div>
+</body>
+</html>
