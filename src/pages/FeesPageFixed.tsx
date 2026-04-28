@@ -33,6 +33,8 @@ import {
 } from 'lucide-react';
 import ReceiptComponent from '@/components/Receipt';
 import FeesAIAssistant from '@/components/ai/FeesAIAssistant';
+import MockPaymentGateway from '@/components/payment/MockPaymentGateway'; // kept as fallback
+import PaymentGatewaySelection from '@/components/payment/PaymentGatewaySelection';
 
 interface FeeRecord {
   id: string;
@@ -64,13 +66,6 @@ const FeesPageFixed = () => {
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [selectedFee, setSelectedFee] = useState<FeeRecord | null>(null);
-  const [paymentData, setPaymentData] = useState({
-    amount: '',
-    utr: '',
-    senderName: '',
-    description: 'Fee Payment'
-  });
-  const [processingPayment, setProcessingPayment] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
   const [receiptTransaction, setReceiptTransaction] = useState<any>(null);
   const [receiptFee, setReceiptFee] = useState<FeeRecord | null>(null);
@@ -229,27 +224,37 @@ const FeesPageFixed = () => {
 
   const handlePayment = (fee: FeeRecord) => {
     setSelectedFee(fee);
-    setPaymentData(prev => ({
-      ...prev,
-      amount: fee.amount.toString()
-    }));
     setShowPaymentDialog(true);
   };
 
-  const handleTransactionSubmit = async () => {
-    setProcessingPayment(true);
-    // Simulate payment processing
-    setTimeout(() => {
-      setShowPaymentDialog(false);
-      setSelectedFee(null);
-      setPaymentData({
-        amount: '',
-        utr: '',
-        senderName: '',
-        description: 'Fee Payment'
-      });
-      setProcessingPayment(false);
-    }, 2000);
+  const handlePaymentSuccess = async (details: { id: string; method: string }) => {
+    if (!selectedFee) return;
+
+    // Simulate backend update
+    toast.success(`Payment successful! Transaction ID: ${details.id}`);
+    setShowPaymentDialog(false);
+    
+    // Auto-open receipt
+    const mockTransaction = {
+      id: details.id,
+      amount: selectedFee.amount,
+      created_at: new Date().toISOString(),
+      utr_number: details.id,
+      status: 'approved',
+      fee_category: selectedFee.fee_type
+    };
+    setReceiptTransaction(mockTransaction);
+    
+    // Auto populate receipt fee with paid status
+    setReceiptFee({...selectedFee, status: 'paid'});
+    setShowReceipt(true);
+    
+    setSelectedFee(null);
+  };
+
+  const handlePaymentCancel = () => {
+    setShowPaymentDialog(false);
+    toast.error('Payment cancelled');
   };
 
   const handleDownloadAllReceipts = async () => {
@@ -453,7 +458,15 @@ const FeesPageFixed = () => {
               </div>
             </div>
             <Button 
-              onClick={() => setShowPaymentDialog(true)}
+              onClick={() => {
+                const dueFeestoBePaid = mockFees.filter(f => f.status !== 'paid');
+                if (dueFeestoBePaid.length === 0) {
+                  toast.success('All fees are already paid!');
+                  return;
+                }
+                setSelectedFee(dueFeestoBePaid[0]);
+                setShowPaymentDialog(true);
+              }}
               className="bg-white text-green-600 px-6 py-3 rounded-xl font-semibold hover:bg-gray-50"
             >
               Pay Now
@@ -648,72 +661,17 @@ const FeesPageFixed = () => {
           </div>
         )}
 
-        {/* Payment Dialog */}
-        <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
-          <DialogContent className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md mx-4">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-gray-900 dark:text-white">
-                {selectedFee ? `Pay ${selectedFee.fee_type}` : 'Fee Payment'}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              {selectedFee && (
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    <div className="mb-2">Amount: <span className="font-medium text-gray-900 dark:text-white">Rs. {selectedFee.amount.toLocaleString()}</span></div>
-                    <div>Due Date: <span className="font-medium text-gray-900 dark:text-white">{selectedFee.due_date}</span></div>
-                  </div>
-                </div>
-              )}
-              <div>
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Amount (INR)</label>
-                <Input
-                  type="number"
-                  value={paymentData.amount}
-                  onChange={(e) => setPaymentData(prev => ({ ...prev, amount: e.target.value }))}
-                  placeholder="Enter amount"
-                  className="w-full px-4 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">UTR Number</label>
-                <Input
-                  type="text"
-                  value={paymentData.utr}
-                  onChange={(e) => setPaymentData(prev => ({ ...prev, utr: e.target.value }))}
-                  placeholder="Enter UTR number"
-                  className="w-full px-4 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Your Name</label>
-                <Input
-                  type="text"
-                  value={paymentData.senderName}
-                  onChange={(e) => setPaymentData(prev => ({ ...prev, senderName: e.target.value }))}
-                  placeholder="Enter your name"
-                  className="w-full px-4 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-            <DialogFooter className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setShowPaymentDialog(false)}
-                className="px-6 py-3 rounded-xl"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleTransactionSubmit}
-                disabled={processingPayment}
-                className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl"
-              >
-                {processingPayment ? 'Processing...' : 'Pay Now'}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <PaymentGatewaySelection
+          isOpen={showPaymentDialog}
+          onClose={() => setShowPaymentDialog(false)}
+          amount={selectedFee ? Number(selectedFee.amount) : 0}
+          description={selectedFee?.fee_type || 'Fee Payment'}
+          studentName={studentProfile?.full_name}
+          studentId={studentProfile?.id}
+          feeId={selectedFee?.id}
+          onSuccess={handlePaymentSuccess}
+          onCancel={handlePaymentCancel}
+        />
 
         {/* Receipt Component */}
         <ReceiptComponent
@@ -732,10 +690,10 @@ const FeesPageFixed = () => {
           <FeesAIAssistant 
             studentData={studentProfile}
             feeData={{
-              totalFees: feeStats.totalFees,
-              paidFees: feeStats.paidFees,
-              pendingFees: feeStats.pendingFees,
-              overdueFees: feeStats.overdueFees
+              totalFees: stats.totalFees,
+              paidFees: stats.paidFees,
+              pendingFees: stats.pendingFees,
+              overdueFees: stats.overdueFees
             }}
           />
         </div>

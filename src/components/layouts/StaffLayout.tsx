@@ -9,6 +9,7 @@ import NotificationDropdown from '@/components/NotificationDropdown';
 import LiveDateTime from '@/components/common/LiveDateTime';
 import { useDarkMode } from '@/contexts/DarkModeContext';
 import { Briefcase, LogOut, Home, Users, GraduationCap, ClipboardList, Calendar, Clock, FileText, Settings, Sun, Moon, Bot } from 'lucide-react';
+import FloatingAIWidget from '@/components/ai/FloatingAIWidget';
 
 interface StaffLayoutProps {
   children: React.ReactNode;
@@ -168,6 +169,9 @@ const StaffLayout: React.FC<StaffLayoutProps> = ({ children, title }) => {
         isOpen={showLogoutDialog} 
         onClose={() => setShowLogoutDialog(false)} 
       />
+      
+      {/* Floating AI Widget */}
+      <FloatingAIWidget />
     </div>
   );
 };

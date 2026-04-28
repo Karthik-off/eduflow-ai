@@ -21,6 +21,7 @@ import {
   CheckCircle,
   AlertCircle
 } from 'lucide-react';
+import FloatingAIWidget from '@/components/ai/FloatingAIWidget';
 
 interface StudentLayoutProps {
   children: React.ReactNode;
@@ -157,6 +158,7 @@ const StudentLayoutWithSearch: React.FC<StudentLayoutProps> = ({ children, title
         
         {/* Floating Back to Home Button for Mobile */}
         <BackToHomeButton variant="floating" />
+        <FloatingAIWidget />
       </div>
     </div>
   );

@@ -25,7 +25,9 @@ import {
   Loader2,
   UserPlus,
   Search,
-  Filter
+  Filter,
+  Eye,
+  X
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -67,8 +69,8 @@ const StaffStudentManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
   const [selectedYear, setSelectedYear] = useState('all');
-  const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showStudentDetails, setShowStudentDetails] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [formData, setFormData] = useState<Partial<Student>>({});
   const [uploading, setUploading] = useState(false);
@@ -143,64 +145,7 @@ const StaffStudentManagement = () => {
     }
   };
 
-  const handleAddStudent = async () => {
-    try {
-      if (!formData.full_name) {
-        toast.error('Full name is required');
-        return;
-      }
-
-      console.log('Adding student:', formData);
-
-      // Create user first
-      const { data: userData, error: userError } = await supabase.auth.signUp({
-        email: formData.email || `${Date.now()}@student.edu`,
-        password: 'temp123456',
-        options: {
-          data: {
-            full_name: formData.full_name,
-            role: 'student'
-          }
-        }
-      });
-
-      console.log('User creation result:', { userData, userError });
-
-      if (userError) {
-        console.error('User creation error:', userError);
-        throw userError;
-      }
-
-      // Then create student record
-      const { data, error } = await supabase
-        .from('students')
-        .insert({
-          user_id: userData.user?.id,
-          full_name: formData.full_name,
-          email: formData.email,
-          phone: formData.phone,
-          department_id: formData.department_id || '00000000-0000-0000-0000-000000000001',
-          section_id: 'section-1'
-        })
-        .select();
-
-      console.log('Student creation result:', { data, error });
-
-      if (error) {
-        console.error('Student creation error:', error);
-        throw error;
-      }
-
-      toast.success('Student added successfully');
-      setShowAddModal(false);
-      setFormData({});
-      fetchStudents();
-    } catch (error) {
-      console.error('Error adding student:', error);
-      toast.error(`Failed to add student: ${error.message || 'Unknown error'}`);
-    }
-  };
-
+  
   const handleUpdateStudent = async () => {
     try {
       if (!selectedStudent || !formData.full_name) {
@@ -435,11 +380,16 @@ const StaffStudentManagement = () => {
     setShowEditModal(true);
   };
 
+  const openStudentDetails = (student: Student) => {
+    setSelectedStudent(student);
+    setShowStudentDetails(true);
+  };
+
   const resetForm = () => {
     setFormData({});
     setSelectedStudent(null);
-    setShowAddModal(false);
     setShowEditModal(false);
+    setShowStudentDetails(false);
   };
 
   return (
@@ -477,10 +427,6 @@ const StaffStudentManagement = () => {
                 Student Management
               </div>
               <div className="flex gap-2">
-                <Button onClick={() => setShowAddModal(true)}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Student
-                </Button>
                 <Button variant="outline" onClick={() => setShowTemplate(true)}>
                   <Download className="w-4 h-4 mr-2" />
                   Template
@@ -499,7 +445,7 @@ const StaffStudentManagement = () => {
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Excel Format: Roll Number, Full Name, Email, Phone, Department, Year
+                Note: Only admin can add new students. Staff can edit existing student details.
               </p>
               </div>
             </CardTitle>
@@ -598,6 +544,13 @@ const StaffStudentManagement = () => {
                         <Button
                           size="sm"
                           variant="outline"
+                          onClick={() => openStudentDetails(student)}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
                           onClick={() => openEditModal(student)}
                         >
                           <Edit className="w-4 h-4" />
@@ -619,93 +572,7 @@ const StaffStudentManagement = () => {
         </Card>
       </main>
 
-      {/* Add Student Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-md mx-4">
-            <CardHeader>
-              <CardTitle>Add New Student</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Roll Number *</label>
-                  <Input
-                    value={formData.roll_number || ''}
-                    onChange={(e) => setFormData(prev => ({ ...prev, roll_number: e.target.value }))}
-                    placeholder="Enter roll number"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Full Name *</label>
-                  <Input
-                    value={formData.full_name || ''}
-                    onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
-                    placeholder="Enter full name"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Email</label>
-                  <Input
-                    type="email"
-                    value={formData.email || ''}
-                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                    placeholder="Enter email address"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Phone</label>
-                  <Input
-                    value={formData.phone || ''}
-                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                    placeholder="Enter phone number"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Department</label>
-                  <Select value={formData.department_id} onValueChange={(value) => setFormData(prev => ({ ...prev, department_id: value }))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select department" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {departments.map(dept => (
-                        <SelectItem key={dept.id} value={dept.id}>
-                          {dept.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Year</label>
-                  <Select value={formData.year} onValueChange={(value) => setFormData(prev => ({ ...prev, year: value }))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select year" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {years.map(year => (
-                        <SelectItem key={year} value={year}>
-                          {year} Year
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="flex gap-2 pt-4">
-                <Button variant="outline" onClick={resetForm}>
-                  Cancel
-                </Button>
-                <Button onClick={handleAddStudent}>
-                  <Save className="w-4 h-4 mr-2" />
-                  Add Student
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
+      
       {/* Edit Student Modal */}
       {showEditModal && selectedStudent && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -796,6 +663,86 @@ const StaffStudentManagement = () => {
       {/* Excel Template Modal */}
       {showTemplate && (
         <ExcelTemplate type="students" onClose={() => setShowTemplate(false)} />
+      )}
+
+      {/* Student Details Modal */}
+      {showStudentDetails && selectedStudent && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-2xl mx-4 max-h-[80vh] overflow-y-auto">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                Student Details
+                <Button variant="ghost" size="sm" onClick={() => setShowStudentDetails(false)}>
+                  <X className="w-4 h-4" />
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Users className="w-10 h-10 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold">{selectedStudent.full_name}</h3>
+                  <p className="text-muted-foreground">{selectedStudent.roll_number}</p>
+                  <div className="flex gap-2 mt-2">
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                      {departments.find(d => d.id === selectedStudent.department_id)?.name || 'Unknown'}
+                    </span>
+                    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
+                      {selectedStudent.year} Year
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Email</label>
+                  <p className="text-sm text-muted-foreground">{selectedStudent.email || 'Not provided'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Phone</label>
+                  <p className="text-sm text-muted-foreground">{selectedStudent.phone || 'Not provided'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Department</label>
+                  <p className="text-sm text-muted-foreground">
+                    {departments.find(d => d.id === selectedStudent.department_id)?.name || 'Unknown'}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Year</label>
+                  <p className="text-sm text-muted-foreground">{selectedStudent.year} Year</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">CGPA</label>
+                  <p className="text-sm text-muted-foreground">{selectedStudent.cgpa || 'N/A'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Attendance</label>
+                  <p className="text-sm text-muted-foreground">{selectedStudent.attendance_percentage || 0}%</p>
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-4 border-t">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setShowStudentDetails(false);
+                    openEditModal(selectedStudent);
+                  }}
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit Student
+                </Button>
+                <Button variant="outline" onClick={() => setShowStudentDetails(false)}>
+                  Close
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   );

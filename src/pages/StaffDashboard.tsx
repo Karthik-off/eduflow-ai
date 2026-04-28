@@ -316,7 +316,6 @@ const StaffDashboard = () => {
     { icon: Calendar, label: 'Calendar', active: false, path: '/staff/calendar' },
     { icon: Clock, label: 'Timetable', active: false, path: '/staff/timetable' },
     { icon: FileText, label: 'Reports', active: false, path: '/staff/reports' },
-    { icon: Settings, label: 'Settings', active: false, path: '/staff/settings' },
   ];
 
   const quickActions = [
@@ -325,7 +324,7 @@ const StaffDashboard = () => {
     { icon: Calendar, label: 'View Calendar', color: 'bg-purple-500', path: '/staff/calendar' },
     { icon: Clock, label: 'Timetable', color: 'bg-orange-500', path: '/staff/timetable' },
     { icon: GraduationCap, label: 'Students', color: 'bg-indigo-500', path: '/staff/students' },
-    { icon: Brain, label: 'AI Assistant', color: 'bg-pink-500', path: '/ai-assistant' },
+    { icon: Brain, label: 'AI Assistant', color: 'bg-pink-500', path: '/staff/ai-assistant' },
   ];
 
   return (
@@ -501,7 +500,7 @@ const StaffDashboard = () => {
                 </div>
               </div>
               <button 
-                onClick={() => navigate('/ai-assistant')}
+                onClick={() => navigate('/staff/ai-assistant')}
                 className="bg-white text-blue-600 px-4 py-2 sm:px-6 sm:py-3 rounded-lg sm:rounded-xl font-semibold hover:bg-gray-50 transition-colors duration-300 flex items-center justify-center space-x-2 w-full sm:w-auto"
               >
                 <span className="text-sm sm:text-base">Chat with AI</span>

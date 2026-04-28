@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import BackToHomeButton from '@/components/BackToHomeButton';
 import ReceiptComponent from '@/components/Receipt';
+import MockPaymentGateway from '@/components/payment/MockPaymentGateway';
 
 interface Fee {
   id: string;
@@ -35,15 +36,7 @@ interface Transaction {
   fee_category?: string;
 }
 
-const UPI_APPS = [
-  { name: 'Google Pay', id: 'gpay', package: 'com.google.android.apps.nbu.paisa.user', color: 'from-blue-500 to-blue-600', icon: '💳' },
-  { name: 'PhonePe', id: 'phonepe', package: 'com.phonepe.app', color: 'from-purple-500 to-purple-600', icon: '📱' },
-  { name: 'Paytm', id: 'paytm', package: 'net.one97.paytm', color: 'from-sky-400 to-sky-500', icon: '💰' },
-];
-
-// Replace with your institution's UPI details
-const RECEIVER_UPI_ID = 'institution@upi';
-const RECEIVER_NAME = 'College Fee Account';
+const RECEIVER_NAME = 'EduFlow Institution';
 
 const FeesPage = () => {
   const { studentProfile } = useAuthStore();
@@ -52,9 +45,7 @@ const FeesPage = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedFee, setSelectedFee] = useState<Fee | null>(null);
-  const [showPayDialog, setShowPayDialog] = useState(false);
-  const [showUtrDialog, setShowUtrDialog] = useState(false);
-  const [utrInput, setUtrInput] = useState('');
+  const [showGateway, setShowGateway] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [showReceipt, setShowReceipt] = useState(false);
@@ -89,51 +80,58 @@ const FeesPage = () => {
     setLoading(false);
   };
 
-  const handlePayViaUPI = (app: typeof UPI_APPS[0]) => {
-    if (!selectedFee) return;
-    const amount = selectedFee.amount;
-    const note = `Fee Payment - ${selectedFee.category}`;
-    const upiUrl = `upi://pay?pa=${RECEIVER_UPI_ID}&pn=${encodeURIComponent(RECEIVER_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
-
-    // Try to open UPI app
-    window.location.href = upiUrl;
-
-    // After a brief delay, show UTR entry dialog
-    setTimeout(() => {
-      setShowPayDialog(false);
-      setShowUtrDialog(true);
-    }, 1500);
-  };
-
-  const handleSubmitUtr = async () => {
-    if (!utrInput.trim() || !selectedFee || !studentProfile?.id) {
-      toast.error('Please enter a valid UTR number');
-      return;
-    }
-
+  const handlePaymentSuccess = async (details: { id: string; method: string }) => {
+    if (!selectedFee || !studentProfile?.id) return;
     setSubmitting(true);
+    
     try {
-      const { data, error } = await supabase.from('transactions').insert({
-        student_id: studentProfile.id,
-        fee_id: selectedFee.id,
-        amount: selectedFee.amount,
-        utr_number: utrInput.trim(),
-        reference_id: `TXN-${Date.now()}`,
-        status: 'pending',
-      }).select().single();
+      // 1. Mark Fee as Paid
+      const { error: feeError } = await supabase
+        .from('fees')
+        .update({ is_paid: true })
+        .eq('id', selectedFee.id);
 
-      if (error) throw error;
+      if (feeError) throw feeError;
 
-      toast.success('Transaction submitted! Awaiting verification.');
-      setShowUtrDialog(false);
-      setUtrInput('');
+      // 2. Insert Transaction Record
+      const { data: txnData, error: txnError } = await supabase
+        .from('transactions')
+        .insert({
+          student_id: studentProfile.id,
+          fee_id: selectedFee.id,
+          amount: selectedFee.amount,
+          utr_number: details.id,
+          reference_id: details.id,
+          status: 'approved',
+        }).select().single();
+
+      if (txnError) throw txnError;
+
+      toast.success('Payment successful! Receipt generated automatically.');
+      setShowGateway(false);
+      
+      // Auto-open receipt
+      const enrichedTxn = {
+        ...txnData,
+        fee_category: selectedFee.category
+      } as Transaction;
+
+      setReceiptTransaction(enrichedTxn);
+      setReceiptFee({...selectedFee, is_paid: true});
+      setShowReceipt(true);
+      
       setSelectedFee(null);
-      fetchData();
+      fetchData(); // Refresh UI
     } catch (err: any) {
-      toast.error(err.message || 'Failed to submit transaction');
+      toast.error(err.message || 'Payment processing failed');
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handlePaymentCancel = () => {
+    setShowGateway(false);
+    toast.error('Payment cancelled');
   };
 
   const getStatusBadge = (status: string) => {
@@ -217,9 +215,9 @@ const FeesPage = () => {
                         <Button
                           size="sm"
                           className="mt-2 text-xs"
-                          onClick={() => { setSelectedFee(fee); setShowPayDialog(true); }}
+                          onClick={() => { setSelectedFee(fee); setShowGateway(true); }}
                         >
-                          <Smartphone className="w-3.5 h-3.5 mr-1" />
+                          <CreditCard className="w-3.5 h-3.5 mr-1" />
                           Pay Now
                         </Button>
                       </div>
@@ -325,64 +323,15 @@ const FeesPage = () => {
           </TabsContent>
         </Tabs>
 
-      {/* UPI Payment App Selection Dialog */}
-      <Dialog open={showPayDialog} onOpenChange={setShowPayDialog}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-center">Pay ₹{selectedFee ? Number(selectedFee.amount).toLocaleString() : ''}</DialogTitle>
-            <p className="text-xs text-muted-foreground text-center">{selectedFee?.category}</p>
-          </DialogHeader>
-          <div className="space-y-3 py-2">
-            <p className="text-sm text-muted-foreground text-center">Choose your UPI app</p>
-            {UPI_APPS.map(app => (
-              <button
-                key={app.id}
-                onClick={() => handlePayViaUPI(app)}
-                className={`w-full flex items-center gap-3 p-3.5 rounded-xl bg-gradient-to-r ${app.color} text-white font-medium text-sm shadow-md hover:shadow-lg transition-all active:scale-[0.98]`}
-              >
-                <span className="text-xl">{app.icon}</span>
-                <span>Pay with {app.name}</span>
-              </button>
-            ))}
-          </div>
-          <p className="text-[10px] text-muted-foreground text-center">
-            You will be redirected to the UPI app. After payment, enter your UTR number for verification.
-          </p>
-        </DialogContent>
-      </Dialog>
-
-      {/* UTR Entry Dialog */}
-      <Dialog open={showUtrDialog} onOpenChange={setShowUtrDialog}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Enter UTR Number</DialogTitle>
-            <p className="text-xs text-muted-foreground">
-              After completing payment in your UPI app, enter the 12-digit UTR/Reference number from the payment confirmation.
-            </p>
-          </DialogHeader>
-          <div className="space-y-3 py-2">
-            <Input
-              placeholder="e.g. 312345678901"
-              value={utrInput}
-              onChange={e => setUtrInput(e.target.value)}
-              maxLength={22}
-              className="text-center text-lg tracking-wider font-mono"
-            />
-            <p className="text-[10px] text-muted-foreground text-center">
-              Amount: ₹{selectedFee ? Number(selectedFee.amount).toLocaleString() : ''} • {selectedFee?.category}
-            </p>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => { setShowUtrDialog(false); setUtrInput(''); }}>
-              Cancel
-            </Button>
-            <Button onClick={handleSubmitUtr} disabled={submitting || !utrInput.trim()}>
-              {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}
-              Submit
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <MockPaymentGateway
+        isOpen={showGateway}
+        onClose={() => setShowGateway(false)}
+        amount={selectedFee ? Number(selectedFee.amount) : 0}
+        description={selectedFee?.category || 'Fee Payment'}
+        studentName={studentProfile?.full_name}
+        onSuccess={handlePaymentSuccess}
+        onCancel={handlePaymentCancel}
+      />
 
       {/* Transaction Report Dialog */}
       <Dialog open={!!selectedTransaction} onOpenChange={() => setSelectedTransaction(null)}>
@@ -418,7 +367,7 @@ const FeesPage = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-xs text-muted-foreground">Receiver UPI</span>
-                  <span className="text-xs font-medium text-foreground">{RECEIVER_UPI_ID}</span>
+                  <span className="text-xs font-medium text-foreground">institution@upi</span>
                 </div>
                 <div className="border-t border-border pt-3 flex justify-between">
                   <span className="text-xs text-muted-foreground">Amount</span>

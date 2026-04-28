@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/layouts/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,11 +19,13 @@ import {
   Download,
   UserCheck,
   Building,
-  GraduationCap
+  GraduationCap,
+  Loader2
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useDarkMode } from '@/contexts/DarkModeContext';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Class {
   id: string;
@@ -39,11 +42,14 @@ interface Class {
   status: 'active' | 'inactive' | 'completed';
   created_at: string;
   subjects: string[];
+  department_id?: string;
+  semester_id?: string;
 }
 
 const AdminClasses = () => {
   const { user } = useAuthStore();
   const { isDarkMode } = useDarkMode();
+  const navigate = useNavigate();
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -52,97 +58,76 @@ const AdminClasses = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingClass, setEditingClass] = useState<Class | null>(null);
 
-  // Mock data for demonstration
-  const mockClasses: Class[] = [
-    {
-      id: '1',
-      name: 'Data Structures and Algorithms',
-      code: 'CS301',
-      department: 'Computer Science',
-      semester: '3rd',
-      section: 'A',
-      capacity: 60,
-      enrolled: 45,
-      room: 'Lab 301',
-      schedule: 'Mon/Wed/Fri 9:00-10:30 AM',
-      faculty: 'John Smith',
-      status: 'active',
-      created_at: '2024-01-15',
-      subjects: ['Data Structures', 'Algorithms', 'Complexity Analysis']
-    },
-    {
-      id: '2',
-      name: 'Web Development',
-      code: 'CS302',
-      department: 'Computer Science',
-      semester: '3rd',
-      section: 'B',
-      capacity: 60,
-      enrolled: 52,
-      room: 'Lab 302',
-      schedule: 'Tue/Thu 2:00-3:30 PM',
-      faculty: 'Sarah Johnson',
-      status: 'active',
-      created_at: '2024-01-15',
-      subjects: ['HTML/CSS', 'JavaScript', 'React', 'Node.js']
-    },
-    {
-      id: '3',
-      name: 'Calculus III',
-      code: 'MATH201',
-      department: 'Mathematics',
-      semester: '2nd',
-      section: 'A',
-      capacity: 50,
-      enrolled: 38,
-      room: 'Room 101',
-      schedule: 'Mon/Wed/Fri 11:00-12:30 PM',
-      faculty: 'Michael Brown',
-      status: 'active',
-      created_at: '2024-01-20',
-      subjects: ['Multivariable Calculus', 'Vector Analysis']
-    },
-    {
-      id: '4',
-      name: 'Quantum Mechanics',
-      code: 'PHY401',
-      department: 'Physics',
-      semester: '4th',
-      section: 'A',
-      capacity: 40,
-      enrolled: 25,
-      room: 'Room 201',
-      schedule: 'Tue/Thu 10:00-11:30 AM',
-      faculty: 'Emily Davis',
-      status: 'inactive',
-      created_at: '2024-01-10',
-      subjects: ['Quantum Theory', 'Wave Mechanics', 'Atomic Physics']
-    },
-    {
-      id: '5',
-      name: 'Database Systems',
-      code: 'CS303',
-      department: 'Computer Science',
-      semester: '3rd',
-      section: 'A',
-      capacity: 60,
-      enrolled: 60,
-      room: 'Lab 303',
-      schedule: 'Mon/Wed/Fri 2:00-3:30 PM',
-      faculty: 'John Smith',
-      status: 'completed',
-      created_at: '2023-08-15',
-      subjects: ['SQL', 'Database Design', 'NoSQL', 'Normalization']
-    }
-  ];
-
+  
   useEffect(() => {
-    // Simulate loading data
-    setTimeout(() => {
-      setClasses(mockClasses);
-      setLoading(false);
-    }, 1000);
+    fetchClasses();
   }, []);
+
+  const fetchClasses = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('sections')
+        .select(`
+          id,
+          name,
+          department_id,
+          semester_id,
+          department:departments(name, code),
+          semester:semesters(label)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching classes:', error);
+        toast.error('Failed to load classes');
+        setClasses([]);
+      } else {
+        // Transform data to match Class interface
+        const transformedClasses = data?.map((section: any) => ({
+          id: section.id,
+          name: section.name,
+          code: section.department?.code || 'N/A',
+          department: section.department?.name || 'Unknown',
+          semester: section.semester?.label || 'Unknown',
+          section: 'A', // Default section
+          capacity: 60, // Default capacity
+          enrolled: 0, // Will be calculated
+          room: 'TBD',
+          schedule: 'TBD',
+          faculty: 'TBD',
+          status: 'active' as const,
+          created_at: section.id, // Using ID as fallback
+          subjects: [],
+          department_id: section.department_id,
+          semester_id: section.semester_id
+        })) || [];
+        
+        // Fetch student counts for each class
+        const classesWithCounts = await Promise.all(
+          transformedClasses.map(async (cls) => {
+            const { count } = await supabase
+              .from('students')
+              .select('*', { count: 'exact', head: true })
+              .eq('section_id', cls.id);
+            
+            return {
+              ...cls,
+              enrolled: count || 0
+            };
+          })
+        );
+
+        setClasses(classesWithCounts);
+      }
+    } catch (error) {
+      console.error('Error in fetchClasses:', error);
+      toast.error('Failed to load classes');
+      setClasses([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredClasses = classes.filter(cls => {
     const matchesSearch = cls.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -156,20 +141,53 @@ const AdminClasses = () => {
 
   const departments = Array.from(new Set(classes.map(cls => cls.department)));
 
-  const handleDeleteClass = (classId: string) => {
+  const handleDeleteClass = async (classId: string) => {
     if (confirm('Are you sure you want to remove this class? This action cannot be undone.')) {
-      setClasses(classes.filter(cls => cls.id !== classId));
-      toast.success('Class removed successfully');
+      try {
+        const { error } = await supabase
+          .from('sections')
+          .delete()
+          .eq('id', classId);
+          
+        if (error) {
+          toast.error('Failed to delete class: ' + error.message);
+        } else {
+          setClasses(classes.filter(cls => cls.id !== classId));
+          toast.success('Class removed successfully');
+        }
+      } catch (error) {
+        console.error('Error deleting class:', error);
+        toast.error('Failed to delete class');
+      }
     }
   };
 
-  const handleToggleStatus = (classId: string) => {
-    setClasses(classes.map(cls => 
-      cls.id === classId 
-        ? { ...cls, status: cls.status === 'active' ? 'inactive' : 'active' }
-        : cls
-    ));
-    toast.success('Class status updated successfully');
+  const handleToggleStatus = async (classId: string) => {
+    try {
+      const classToUpdate = classes.find(cls => cls.id === classId);
+      if (!classToUpdate) return;
+
+      const newStatus = classToUpdate.status === 'active' ? 'inactive' : 'active';
+      
+      const { error } = await supabase
+        .from('sections')
+        .update({ status: newStatus } as any)
+        .eq('id', classId);
+
+      if (error) {
+        toast.error('Failed to update class status: ' + error.message);
+      } else {
+        setClasses(classes.map(cls => 
+          cls.id === classId 
+            ? { ...cls, status: newStatus }
+            : cls
+        ));
+        toast.success('Class status updated successfully');
+      }
+    } catch (error) {
+      console.error('Error toggling class status:', error);
+      toast.error('Failed to update class status');
+    }
   };
 
   const exportClassData = () => {
@@ -357,7 +375,7 @@ const AdminClasses = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredClasses.map((cls) => (
-              <Card key={cls.id} className="hover:shadow-lg transition-shadow">
+              <Card key={cls.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate(`/admin/class/${cls.id}`)}>
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div>

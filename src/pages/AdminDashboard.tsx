@@ -735,8 +735,8 @@ const AdminDashboard = () => {
   };
 
   const filteredStudents = studentList.filter(s =>
-    s.name.toLowerCase().includes(studentSearch.toLowerCase()) ||
-    s.roll_number.toLowerCase().includes(studentSearch.toLowerCase()) ||
+    (s.full_name || '').toLowerCase().includes(studentSearch.toLowerCase()) ||
+    (s.roll_number || '').toLowerCase().includes(studentSearch.toLowerCase()) ||
     (s.email?.toLowerCase().includes(studentSearch.toLowerCase()) ?? false) ||
     (s.department?.toLowerCase().includes(studentSearch.toLowerCase()) ?? false) ||
     (s.year?.toLowerCase().includes(studentSearch.toLowerCase()) ?? false)
@@ -1622,10 +1622,10 @@ const AdminDashboard = () => {
                     <CardContent className="p-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-bold text-sm shrink-0">
-                          {student.name.charAt(0)}
+                          {(student.full_name || 'U').charAt(0)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-sm text-foreground">{student.name}</h4>
+                          <h4 className="font-semibold text-sm text-foreground">{student?.full_name}</h4>
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <span>{student.roll_number}</span>
                             <span>Department: {student.department || 'Not specified'}</span>

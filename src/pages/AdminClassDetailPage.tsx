@@ -13,7 +13,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import {
-  ArrowLeft, Users, Briefcase, GraduationCap, Loader2, BookOpen, Search, Pencil, Check, X, Plus, Calendar, Trash2,
+  ArrowLeft, Users, Briefcase, GraduationCap, Loader2, BookOpen, Search, Pencil, Check, X, Plus, Calendar, Trash2, Upload,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -37,11 +37,21 @@ interface StaffAssignment {
 
 interface Student {
   id: string;
+  user_id?: string;
   full_name: string;
   roll_number: string;
   email: string | null;
   phone: string | null;
   cgpa: number | null;
+  attendance_percentage?: number;
+  avatar_url?: string;
+  bio?: string;
+  created_at?: string;
+  current_semester_id?: string;
+  department_id?: string;
+  section_id?: string;
+  is_graduated?: boolean;
+  is_disabled?: boolean;
 }
 
 interface Subject {
@@ -110,56 +120,95 @@ const AdminClassDetailPage = () => {
   const [newSubjectCredits, setNewSubjectCredits] = useState('3');
   const [addingSubject, setAddingSubject] = useState(false);
 
+  // Add student
+  const [showAddStudentModal, setShowAddStudentModal] = useState(false);
+  const [addStudentForm, setAddStudentForm] = useState({
+    full_name: '',
+    email: '',
+    password: '',
+    roll_number: '',
+    phone: '',
+    year: '1st',
+    fees: '',
+    is_graduated: false,
+    is_disabled: false,
+    documents: [] as File[]
+  });
+  const [addingStudent, setAddingStudent] = useState(false);
+  const [uploadingDocuments, setUploadingDocuments] = useState(false);
+
   useEffect(() => {
     if (sectionId) fetchAll();
   }, [sectionId]);
 
   const fetchAll = async () => {
-    setLoading(true);
-
-    const { data: sec } = await supabase
-      .from('sections')
-      .select('id, name, department_id, semester_id, department:departments(name, code), semester:semesters(label)')
-      .eq('id', sectionId!)
-      .single();
-    setClassInfo(sec as unknown as ClassInfo);
-
-    const { data: assignments } = await supabase
-      .from('staff_assignments')
-      .select('id, role_type, subject_id, staff:staff(id, full_name, staff_code, email), subject:subjects(id, name, code)')
-      .eq('section_id', sectionId!)
-      .eq('is_active', true);
-    setStaffAssignments((assignments as unknown as StaffAssignment[]) ?? []);
-
-    const { data: studs } = await supabase
-      .from('students')
-      .select('id, full_name, roll_number, email, phone, cgpa')
-      .eq('section_id', sectionId!)
-      .order('roll_number');
-    setStudents((studs as Student[]) ?? []);
-
-    // Fetch subjects for this class's department + semester
-    if (sec) {
-      const s = sec as unknown as ClassInfo;
-      const { data: subs } = await supabase
-        .from('subjects')
-        .select('id, name, code')
-        .eq('department_id', s.department_id)
-        .eq('semester_id', s.semester_id)
-        .order('name');
-      setDeptSubjects((subs as Subject[]) ?? []);
+    if (!sectionId) {
+      console.error('No section ID provided');
+      setLoading(false);
+      return;
     }
 
-    // Fetch timetable entries
-    const { data: tt } = await supabase
-      .from('timetable_entries')
-      .select('id, day_of_week, period_number, start_time, end_time, room, subject:subjects(id, name, code), staff:staff(id, full_name, staff_code)')
-      .eq('section_id', sectionId!)
-      .order('day_of_week')
-      .order('period_number');
-    setTimetableEntries((tt as unknown as TimetableEntry[]) ?? []);
+    setLoading(true);
+    console.log('Fetching data for section ID:', sectionId);
 
-    setLoading(false);
+    try {
+      const { data: sec, error: secError } = await supabase
+        .from('sections')
+        .select('id, name, department_id, semester_id, department:departments(name, code), semester:semesters(label)')
+        .eq('id', sectionId!)
+        .single();
+
+      if (secError) {
+        console.error('Error fetching section:', secError);
+        throw secError;
+      }
+
+      console.log('Section data:', sec);
+      setClassInfo(sec as unknown as ClassInfo);
+
+      const { data: assignments } = await supabase
+        .from('staff_assignments')
+        .select('id, role_type, subject_id, staff:staff(id, full_name, staff_code, email), subject:subjects(id, name, code)')
+        .eq('section_id', sectionId!)
+        .eq('is_active', true);
+      setStaffAssignments((assignments as unknown as StaffAssignment[]) ?? []);
+
+      const { data: studs } = await supabase
+        .from('students')
+        .select('id, full_name, roll_number, email, phone, cgpa')
+        .eq('section_id', sectionId!)
+        .order('roll_number');
+      setStudents((studs as Student[]) ?? []);
+      console.log('Students data:', studs);
+
+      // Fetch subjects for this class's department + semester
+      if (sec) {
+        const s = sec as unknown as ClassInfo;
+        const { data: subs } = await supabase
+          .from('subjects')
+          .select('id, name, code')
+          .eq('department_id', s.department_id)
+          .eq('semester_id', s.semester_id)
+          .order('name');
+        setDeptSubjects((subs as Subject[]) ?? []);
+        console.log('Subjects data:', subs);
+      }
+
+      // Fetch timetable entries
+      const { data: tt } = await supabase
+        .from('timetable_entries')
+        .select('id, day_of_week, period_number, start_time, end_time, room, subject:subjects(id, name, code), staff:staff(id, full_name, staff_code)')
+        .eq('section_id', sectionId!)
+        .order('day_of_week')
+        .order('period_number');
+      setTimetableEntries((tt as unknown as TimetableEntry[]) ?? []);
+      console.log('Timetable data:', tt);
+    } catch (error) {
+      console.error('Error in fetchAll:', error);
+      toast.error('Failed to load class data: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const classTeacher = staffAssignments.find(a => a.role_type === 'class_incharge');
@@ -276,6 +325,138 @@ const AdminClassDetailPage = () => {
     setAddingSubject(false);
   };
 
+  const handleAddStudent = async () => {
+    if (!addStudentForm.full_name || !addStudentForm.email || !addStudentForm.password || !addStudentForm.roll_number) {
+      toast.error('Please fill all required fields');
+      return;
+    }
+
+    if (!classInfo) {
+      toast.error('Class information not available');
+      return;
+    }
+
+    if (!sectionId) {
+      toast.error('Section ID not available');
+      return;
+    }
+
+    setAddingStudent(true);
+    console.log('Starting student creation process...');
+    console.log('Form data:', addStudentForm);
+    console.log('Class info:', classInfo);
+    console.log('Section ID:', sectionId);
+
+    try {
+      // Create user first
+      console.log('Creating user account...');
+      const { data: userData, error: userError } = await supabase.auth.signUp({
+        email: addStudentForm.email,
+        password: addStudentForm.password,
+        options: {
+          data: {
+            full_name: addStudentForm.full_name,
+            role: 'student'
+          }
+        }
+      });
+
+      console.log('User creation result:', { userData, userError });
+
+      if (userError) {
+        console.error('User creation failed:', userError);
+        throw new Error(`User creation failed: ${userError.message}`);
+      }
+
+      if (!userData.user?.id) {
+        throw new Error('User created but no user ID returned');
+      }
+
+      // Then create student record
+      console.log('Creating student record...');
+      const studentRecord = {
+        user_id: userData.user.id,
+        full_name: addStudentForm.full_name,
+        email: addStudentForm.email,
+        phone: addStudentForm.phone || null,
+        roll_number: addStudentForm.roll_number,
+        department_id: classInfo.department_id,
+        section_id: sectionId,
+        current_semester_id: classInfo.semester_id,
+        is_graduated: addStudentForm.is_graduated,
+        is_disabled: addStudentForm.is_disabled,
+        cgpa: 0,
+        attendance_percentage: 0
+      };
+
+      console.log('Student record to insert:', studentRecord);
+
+      const { data: studentData, error: studentError } = await supabase
+        .from('students')
+        .insert(studentRecord)
+        .select()
+        .single();
+
+      console.log('Student record result:', { studentData, studentError });
+
+      if (studentError) {
+        console.error('Student record creation failed:', studentError);
+        throw new Error(`Student record creation failed: ${studentError.message}`);
+      }
+
+      if (!studentData?.id) {
+        throw new Error('Student record created but no ID returned');
+      }
+
+      // Add fee record if fees provided
+      if (addStudentForm.fees && parseFloat(addStudentForm.fees) > 0) {
+        console.log('Adding fee record...');
+        const feeRecord = {
+          student_id: studentData.id,
+          category: 'admission',
+          amount: parseFloat(addStudentForm.fees),
+          description: 'Admission fees',
+          is_paid: false
+        };
+        
+        console.log('Fee record to insert:', feeRecord);
+        
+        const { error: feeError } = await supabase.from('fees').insert(feeRecord);
+        
+        if (feeError) {
+          console.error('Fee record creation failed:', feeError);
+          // Don't throw error for fee failure, just log it
+          console.warn('Fee record creation failed but student was created successfully');
+        } else {
+          console.log('Fee record created successfully');
+        }
+      }
+
+      console.log('Student creation completed successfully');
+      toast.success(`Student "${addStudentForm.full_name}" added successfully`);
+      setShowAddStudentModal(false);
+      setAddStudentForm({
+        full_name: '',
+        email: '',
+        password: '',
+        roll_number: '',
+        phone: '',
+        year: '1st',
+        fees: '',
+        is_graduated: false,
+        is_disabled: false,
+        documents: [] as File[]
+      });
+      fetchAll();
+    } catch (error: any) {
+      console.error('Complete error in handleAddStudent:', error);
+      console.error('Error stack:', error.stack);
+      toast.error(`Failed to add student: ${error.message || 'Unknown error'}`);
+    } finally {
+      setAddingStudent(false);
+    }
+  };
+
   // Timetable functions
   const openTimetableDialog = (entry?: TimetableEntry) => {
     if (entry) {
@@ -371,6 +552,32 @@ const AdminClassDetailPage = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!classInfo) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Class Not Found</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            The class with ID "{sectionId}" was not found in the system.
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-500 mb-6">
+            This could be because:
+          </p>
+          <ul className="text-left text-sm text-gray-500 dark:text-gray-500 space-y-1">
+            <li>• The class ID doesn't exist</li>
+            <li>• The class has been deleted</li>
+            <li>• You don't have permission to view this class</li>
+          </ul>
+          <Button onClick={() => navigate('/admin/dashboard')} className="mt-6">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Classes
+          </Button>
+        </div>
       </div>
     );
   }
@@ -534,14 +741,20 @@ const AdminClassDetailPage = () => {
           <TabsContent value="students" className="space-y-3 mt-4">
             <div className="flex items-center justify-between gap-3">
               <h2 className="font-display font-bold text-foreground text-sm">Students ({students.length})</h2>
-              <div className="relative max-w-[200px]">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-                <Input
-                  placeholder="Search..."
-                  value={studentSearch}
-                  onChange={(e) => setStudentSearch(e.target.value)}
-                  className="h-8 pl-8 text-xs"
-                />
+              <div className="flex gap-2">
+                <Button variant="default" size="sm" className="h-8 text-xs gap-1.5 gradient-primary text-primary-foreground" onClick={() => setShowAddStudentModal(true)}>
+                  <Plus className="w-3.5 h-3.5" />
+                  Add Student
+                </Button>
+                <div className="relative max-w-[200px]">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                  <Input
+                    placeholder="Search..."
+                    value={studentSearch}
+                    onChange={(e) => setStudentSearch(e.target.value)}
+                    className="h-8 pl-8 text-xs"
+                  />
+                </div>
               </div>
             </div>
 
@@ -929,6 +1142,148 @@ const AdminClassDetailPage = () => {
             >
               {addingSubject ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Add Subject'}
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Student Dialog */}
+      <Dialog open={showAddStudentModal} onOpenChange={setShowAddStudentModal}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-base">Add New Student</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="text-xs font-medium text-foreground">Full Name *</label>
+                <Input
+                  value={addStudentForm.full_name}
+                  onChange={(e) => setAddStudentForm(prev => ({ ...prev, full_name: e.target.value }))}
+                  placeholder="Enter full name"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-foreground">Email *</label>
+                <Input
+                  type="email"
+                  value={addStudentForm.email}
+                  onChange={(e) => setAddStudentForm(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="Enter email address"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-foreground">Password *</label>
+                <Input
+                  type="password"
+                  value={addStudentForm.password}
+                  onChange={(e) => setAddStudentForm(prev => ({ ...prev, password: e.target.value }))}
+                  placeholder="Enter password"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-foreground">Roll Number *</label>
+                <Input
+                  value={addStudentForm.roll_number}
+                  onChange={(e) => setAddStudentForm(prev => ({ ...prev, roll_number: e.target.value }))}
+                  placeholder="Enter roll number"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-foreground">Phone</label>
+                <Input
+                  value={addStudentForm.phone}
+                  onChange={(e) => setAddStudentForm(prev => ({ ...prev, phone: e.target.value }))}
+                  placeholder="Enter phone number"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-foreground">Year</label>
+                <Select value={addStudentForm.year} onValueChange={(value) => setAddStudentForm(prev => ({ ...prev, year: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1st">1st Year</SelectItem>
+                    <SelectItem value="2nd">2nd Year</SelectItem>
+                    <SelectItem value="3rd">3rd Year</SelectItem>
+                    <SelectItem value="4th">4th Year</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-foreground">Fees</label>
+                <Input
+                  type="number"
+                  value={addStudentForm.fees}
+                  onChange={(e) => setAddStudentForm(prev => ({ ...prev, fees: e.target.value }))}
+                  placeholder="Enter admission fees"
+                />
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="is_graduated"
+                    checked={addStudentForm.is_graduated}
+                    onChange={(e) => setAddStudentForm(prev => ({ ...prev, is_graduated: e.target.checked }))}
+                  />
+                  <label htmlFor="is_graduated" className="text-xs font-medium text-foreground">Graduated</label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="is_disabled"
+                    checked={addStudentForm.is_disabled}
+                    onChange={(e) => setAddStudentForm(prev => ({ ...prev, is_disabled: e.target.checked }))}
+                  />
+                  <label htmlFor="is_disabled" className="text-xs font-medium text-foreground">Disabled</label>
+                </div>
+              </div>
+            </div>
+            
+            {/* Document Upload */}
+            <div>
+              <label className="text-xs font-medium text-foreground">Documents</label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                <input
+                  type="file"
+                  multiple
+                  accept=".pdf,.doc,.doc,.jpg,.jpeg,.png"
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      setAddStudentForm(prev => ({ ...prev, documents: [...prev.documents, ...Array.from(e.target.files)] }));
+                    }
+                  }}
+                  disabled={uploadingDocuments}
+                  className="hidden"
+                />
+                <div className="text-center">
+                  <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                  <p className="text-sm text-gray-600">
+                    {uploadingDocuments ? 'Uploading...' : 'Click to upload documents (PDF, DOC, JPG, PNG)'}
+                  </p>
+                  {addStudentForm.documents.length > 0 && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      {addStudentForm.documents.length} file(s) selected
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-4">
+              <Button variant="outline" onClick={() => setShowAddStudentModal(false)}>
+                Cancel
+              </Button>
+              <Button 
+                className="gradient-primary text-primary-foreground" 
+                onClick={handleAddStudent}
+                disabled={addingStudent}
+              >
+                {addingStudent ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+                {addingStudent ? 'Adding Student...' : 'Add Student'}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

@@ -34,14 +34,7 @@ const AttendancePageFixed = () => {
   const navigate = useNavigate();
   const { studentProfile } = useAuthStore();
   const { records, stats, isLoading, error, refreshData } = useAttendanceData();
-  const [showTransactionDialog, setShowTransactionDialog] = useState(false);
   const [showQRScanner, setShowQRScanner] = useState(false);
-  const [transactionData, setTransactionData] = useState({
-    amount: '',
-    utr: '',
-    senderName: '',
-    description: 'Quick Payment via Attendance Page'
-  });
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMonth, setSelectedMonth] = useState('');
@@ -122,24 +115,7 @@ const AttendancePageFixed = () => {
     (record.status && record.status.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  const handleQuickPayment = () => {
-    setShowTransactionDialog(true);
-  };
-
-  const handleTransactionSubmit = async () => {
-    setLoading(true);
-    // Simulate processing
-    setTimeout(() => {
-      setShowTransactionDialog(false);
-      setTransactionData({
-        amount: '',
-        utr: '',
-        senderName: '',
-        description: 'Quick Payment via Attendance Page'
-      });
-      setLoading(false);
-    }, 2000);
-  };
+  // Filter records based on search
 
   const handleScanAttendance = () => {
     setShowQRScanner(true);
@@ -249,7 +225,7 @@ const AttendancePageFixed = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 shadow-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
@@ -292,26 +268,7 @@ const AttendancePageFixed = () => {
             </div>
           </Card>
 
-          <Card className="bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl p-6 shadow-lg">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                  <Receipt className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <div className="text-xl font-bold text-white mb-1">Quick Payment</div>
-                  <div className="text-white/80 text-sm">Pay fees instantly</div>
-                </div>
-              </div>
-              <Button 
-                onClick={handleQuickPayment}
-                className="bg-white text-orange-600 px-4 py-2 rounded-xl font-semibold hover:bg-gray-50"
-              >
-                <Smartphone className="w-4 h-4 mr-2" />
-                Pay
-              </Button>
-            </div>
-          </Card>
+
         </div>
 
         {/* Attendance Records */}
@@ -363,62 +320,7 @@ const AttendancePageFixed = () => {
           ))}
         </div>
 
-        {/* Payment Dialog */}
-        <Dialog open={showTransactionDialog} onOpenChange={setShowTransactionDialog}>
-          <DialogContent className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md mx-4">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-gray-900 dark:text-white">Quick Payment</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Amount (INR)</label>
-                <Input
-                  type="number"
-                  value={transactionData.amount}
-                  onChange={(e) => setTransactionData(prev => ({ ...prev, amount: e.target.value }))}
-                  placeholder="Enter amount"
-                  className="w-full px-4 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">UTR Number</label>
-                <Input
-                  type="text"
-                  value={transactionData.utr}
-                  onChange={(e) => setTransactionData(prev => ({ ...prev, utr: e.target.value }))}
-                  placeholder="Enter UTR number"
-                  className="w-full px-4 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Your Name</label>
-                <Input
-                  type="text"
-                  value={transactionData.senderName}
-                  onChange={(e) => setTransactionData(prev => ({ ...prev, senderName: e.target.value }))}
-                  placeholder="Enter your name"
-                  className="w-full px-4 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-            <DialogFooter className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setShowTransactionDialog(false)}
-                className="px-6 py-3 rounded-xl"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleTransactionSubmit}
-                disabled={loading}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
-              >
-                {loading ? 'Processing...' : 'Pay Now'}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+
 
         {/* QR Scanner Modal */}
         <QRScannerModal
