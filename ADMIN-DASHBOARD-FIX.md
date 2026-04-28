@@ -2,6 +2,8 @@
 
 ## Problems Identified (Tamil + English)
 
+
+
 ### 1. Column Name Mismatch (Column Name Mismatch)
 - **Problem**: AdminDashboard was using `full_name` column
 - **Issue**: Supabase table has `name` column
