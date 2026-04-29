@@ -33,11 +33,10 @@ export interface AIContext {
   systemData?: any;
 }
 
+import { supabase } from "@/integrations/supabase/client";
+
 class AIService {
   private context: AIContext | null = null;
-
-  private readonly OLLAMA_URL = '/api/generate';
-  private readonly OLLAMA_MODEL = 'llama2:7b';
 
   setContext(context: AIContext) {
     this.context = context;
@@ -47,28 +46,17 @@ class AIService {
     return this.context;
   }
 
-  private async queryOllama(prompt: string, systemPrompt: string): Promise<string> {
+  private async queryAI(prompt: string, systemPrompt: string): Promise<string> {
     try {
-      const response = await fetch(this.OLLAMA_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: this.OLLAMA_MODEL,
-          prompt: prompt,
-          system: systemPrompt,
-          stream: false
-        })
+      const { data, error } = await supabase.functions.invoke('ai-chat', {
+        body: { query: prompt, systemPrompt },
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data.response;
+      if (error) throw error;
+      if (data?.error) return `AI error: ${data.error}`;
+      return data?.answer ?? "I couldn't generate a response.";
     } catch (error) {
-      console.error("Ollama API Error:", error);
-      return `I'm sorry, I couldn't connect to Ollama. Please ensure Ollama is running and the "${this.OLLAMA_MODEL}" model is installed.`;
+      console.error("AI Service Error:", error);
+      return "I'm sorry, I couldn't reach the AI service right now. Please try again in a moment.";
     }
   }
 
@@ -95,7 +83,7 @@ class AIService {
     systemPrompt += "\nKeep your response concise and directly answer the question. Do NOT use markdown links, just use plain text or bold text.";
     systemPrompt += "\nIf there are any quick actions you can suggest, you MUST format them exactly by ending your response with '**Quick Actions Available:**' followed strictly by a list of bullet points starting with '•'.";
 
-    const ollamaAnswer = await this.queryOllama(query, systemPrompt);
+    const ollamaAnswer = await this.queryAI(query, systemPrompt);
 
     let type: AIResponse['type'] = (currentContext?.module as any) || 'general';
     const validTypes = ['question', 'material', 'concept', 'exam', 'admin', 'fees', 'general'];
