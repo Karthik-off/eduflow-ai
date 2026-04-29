@@ -83,7 +83,7 @@ class AIService {
     systemPrompt += "\nKeep your response concise and directly answer the question. Do NOT use markdown links, just use plain text or bold text.";
     systemPrompt += "\nIf there are any quick actions you can suggest, you MUST format them exactly by ending your response with '**Quick Actions Available:**' followed strictly by a list of bullet points starting with '•'.";
 
-    const ollamaAnswer = await this.queryOllama(query, systemPrompt);
+    const ollamaAnswer = await this.queryAI(query, systemPrompt);
 
     let type: AIResponse['type'] = (currentContext?.module as any) || 'general';
     const validTypes = ['question', 'material', 'concept', 'exam', 'admin', 'fees', 'general'];
