@@ -383,8 +383,6 @@ const AdminClassDetailPage = () => {
         department_id: classInfo.department_id,
         section_id: sectionId,
         current_semester_id: classInfo.semester_id,
-        is_graduated: addStudentForm.is_graduated,
-        is_disabled: addStudentForm.is_disabled,
         cgpa: 0,
         attendance_percentage: 0
       };
@@ -393,7 +391,7 @@ const AdminClassDetailPage = () => {
 
       const { data: studentData, error: studentError } = await supabase
         .from('students')
-        .insert(studentRecord)
+        .insert([studentRecord])
         .select()
         .single();
 
