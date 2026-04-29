@@ -52,12 +52,11 @@ export const createStaffAuthUsers = async () => {
         // Create user role if missing
         const { error: roleError } = await supabase
           .from('user_roles')
-          .upsert({ 
+          .upsert([{ 
             user_id: existingUser.id, 
             role: 'staff',
             created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          });
+          }]);
           
         if (roleError) {
           console.log(`Error creating role for ${staff.email}:`, roleError.message);
@@ -106,12 +105,11 @@ export const createStaffAuthUsers = async () => {
         // Create user role
         const { error: roleError } = await supabase
           .from('user_roles')
-          .insert({ 
+          .insert([{ 
             user_id: authData.user.id, 
             role: 'staff',
             created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          });
+          }]);
           
         if (roleError) {
           console.log(`Error creating role for ${staff.email}:`, roleError.message);
