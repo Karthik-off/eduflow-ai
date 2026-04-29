@@ -53,11 +53,10 @@ const CreateAdminUser: React.FC = () => {
       } else {
         const { data: newDept } = await supabase
           .from('departments')
-          .insert({
+          .insert([{
             name: 'Computer Science',
-            code: 'CS',
-            description: 'Computer Science Department'
-          })
+            code: 'CS'
+          }])
           .select('id')
           .single();
         
