@@ -67,12 +67,11 @@ export const setupStaffAuthManually = async () => {
           console.log(`Creating role for existing user ${staff.email}`);
           const { error: roleError } = await supabase
             .from('user_roles')
-            .insert({ 
+            .insert([{ 
               user_id: existingUser.id, 
               role: 'staff',
               created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            });
+            }]);
             
           if (roleError) {
             console.log(`Error creating role for ${staff.email}:`, roleError.message);
